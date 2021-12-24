@@ -7,14 +7,14 @@ import { IsNumber, MaxLength, Min, MinLength } from "class-validator";
 const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz123456789", 10);
 
 @ObjectType()
-@index({ productId: 1 })
+@index({ pieceId: 1 })
 export class Piece {
   @Field(() => String)
   _id: string;
 
   @Field(() => String)
   @prop({ required: true, ref: () => User })
-  user: Ref<User>;
+  owner: Ref<User>;
 
   @Field(() => String)
   @prop({ required: true })
@@ -22,15 +22,11 @@ export class Piece {
 
   @Field(() => String)
   @prop({ required: true })
-  description: string;
+  deepMyint: string;
 
   @Field(() => String)
-  @prop({ required: true })
-  price: string;
-
-  @Field(() => String)
-  @prop({ required: true, default: () => `product_${nanoid()}, unique: true}` })
-  productId: string;
+  @prop({ required: true, default: () => `piece_${nanoid()}, unique: true}` })
+  pieceId: string;
 }
 
 export const PieceModel = getModelForClass<typeof Piece>(Piece);
@@ -47,16 +43,11 @@ export class CreatePieceInput {
     message: "Description must not be more than 1000 characters",
   })
   @Field()
-  description: string;
-
-  @IsNumber()
-  @Min(1)
-  @Field()
-  price: number;
+  deepMyint: string
 }
 
 @InputType()
 export class GetPieceInput {
   @Field()
-  productId: string;
+  pieceId: string
 }

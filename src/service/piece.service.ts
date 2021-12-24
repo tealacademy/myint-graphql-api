@@ -5,19 +5,19 @@ import {
 } from "../schema/piece.schema";
 import { User } from "../schema/user.schema";
 
-class ProductService {
-  async createProduct(input: CreatePieceInput & { user: User["_id"] }) {
+class PieceService {
+  async createPiece(input: CreatePieceInput & { user: User["_id"] }) {
     return PieceModel.create(input);
   }
 
-  async findProducts() {
+  async findPieces() {
     // Pagination login
     return PieceModel.find().lean();
   }
 
-  async findSingleProduct(input: GetPieceInput) {
+  async findSinglePiece(input: GetPieceInput) {
     return PieceModel.findOne(input).lean();
   }
 }
 
-export default ProductService;
+export default PieceService;

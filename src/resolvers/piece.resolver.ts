@@ -9,27 +9,27 @@ import Context from "../types/context"
 
 @Resolver()
 export default class PieceResolver {
-  constructor(private productService: PieceService) {
-    this.productService = new PieceService();
+  constructor(private pieceService: PieceService) {
+    this.pieceService = new PieceService();
   }
 
   @Authorized()
   @Mutation(() => Piece)
-  createProduct(
+  createPiece(
     @Arg("input") input: CreatePieceInput,
     @Ctx() context: Context
   ) {
     const user = context.user!;
-    return this.productService.createProduct({ ...input, user: user?._id });
+    return this.pieceService.createPiece({ ...input, user: user?._id });
   }
 
   @Query(() => [Piece])
   products() {
-    return this.productService.findProducts();
+    return this.pieceService.findPieces();
   }
 
   @Query(() => Piece)
   product(@Arg("input") input: GetPieceInput) {
-    return this.productService.findSingleProduct(input);
+    return this.pieceService.findSinglePiece(input);
   }
 }
