@@ -11,19 +11,19 @@ import {
   ApolloServerPluginLandingPageGraphQLPlayground,
   ApolloServerPluginLandingPageProductionDefault,
 } from "apollo-server-core"
-import { resolvers } from "./resolvers";
-import { connectToMongo } from "./utils/mongo";
+import { resolvers } from "./resolvers"
+import { connectToMongo } from "./utils/mongo"
 // import { verifyJwt } from "./utils/jwt";
 // import { User } from "./schema/user.schema";
-import Context from "./types/context";
-import authChecker from "./utils/authChecker";
+import Context from "./types/context"
+import authChecker from "./utils/authChecker"
 
 // Loads .env file contents into `process.env`. Example: 'KEY=value' becomes { parsed: { KEY: 'value' } }
 
 /**
  * myintAPI is the main-function that starts our API
  */
-async function myintAPI() {
+async function bootstrap() {
 
   // Build the schema
   const schema = await buildSchema({
@@ -42,12 +42,12 @@ async function myintAPI() {
   const server = new ApolloServer({
     schema,
     context: (ctx: Context) => {
-      console.log(ctx)
+ 
       // const context = ctx;
 
       // if (ctx.req.cookies.accessToken) {
-      //   const user = verifyJwt<User>(ctx.req.cookies.accessToken);
-      //   context.user = user;
+      //   const user = verifyJwt<User>(ctx.req.cookies.accessToken)
+      //   context.user = user
       // }
       // return context
       return ctx
@@ -84,4 +84,4 @@ async function myintAPI() {
   connectToMongo()
 }
 
-myintAPI()
+bootstrap()

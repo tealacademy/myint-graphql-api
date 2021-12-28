@@ -39,7 +39,7 @@ interface QueryHelpers {
 @queryMethod(findByEmail)
 @ObjectType()             // grapQL does not know this will be an object so we add @Object() (from type-graphql)
 export class User {
-  // THese fields can be accessed with grapQL
+  // These fields can be accessed with grapQL
   @Field(() => String)
   _id: string
 
