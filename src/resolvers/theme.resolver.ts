@@ -1,37 +1,37 @@
 import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql"
 import {
-  CreatePieceInput,
-  GetPieceInput,
-  Piece,
-} from "../schema/piece.schema"
-import PieceService from "../service/piece.service"
+  CreateThemeInput,
+  GetThemeInput,
+  Theme
+} from "../schema/theme.schema"
+import ThemeService from "../service/theme.service"
 import Context from "../types/context"
 
 @Resolver()
-export default class PieceResolver {
-  constructor(private pieceService: PieceService) {
-    this.pieceService = new PieceService()
+export default class ThemeResolver {
+  constructor(private themeService: ThemeService) {
+    this.themeService = new ThemeService()
   }
   
   // @Authorized()
-  @Mutation(() => Piece)
-  createPiece(
-    @Arg("input") input: CreatePieceInput,
+  @Mutation(() => Theme)
+  createTheme(
+    @Arg("input") input: CreateThemeInput,
     @Ctx() context: Context
   ) {
     
     // Create complete document with filled 1:n relations for tags, slides
     const user = context.user!
-    return this.pieceService.createPiece({ ...input, user: user?._id })
+    return this.themeService.createTheme(input) // , user: user?._id })
   }
 
-  @Query(() => [Piece])
-  pieces() {
-    return this.pieceService.findPieces()
+  @Query(() => [Theme])
+  themes() {
+    return this.themeService.findThemes()
   }
 
-  @Query(() => Piece)
-  piece(@Arg("input") input: GetPieceInput,
+  @Query(() => Theme)
+  theme(@Arg("input") input: GetThemeInput,
   @Ctx() context: Context) {
   
   //   const context = (ctx: Context) => {
@@ -43,6 +43,6 @@ export default class PieceResolver {
 // if (context2.req.operationName !== 'IntrospectionQuery') {
   
     console.log("find piece ", input, context.req.body.query)
-    return this.pieceService.findSinglePiece(input)
+    return this.themeService.findSingleTheme(input)
   }
 }

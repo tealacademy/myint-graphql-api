@@ -3,7 +3,7 @@ import { Field, InputType, ObjectType, ID, Int } from "type-graphql"
 import { customAlphabet } from "nanoid"
 import { User } from "./user.schema"
 import { Slide, ListSlideInput } from "./slide.schema"
-import { Theme, ListThemeInput } from "./theme.schema"
+import { Theme } from "./theme.schema"
 import { Tag, CreateTagInput } from "./tag.schema"
 import { IsNumber, MaxLength, Min, MinLength, IsUrl, IsArray, ValidateNested, IsObject } from "class-validator"
 import Context from "./../types/context"
@@ -21,6 +21,7 @@ export class Piece {
   // @prop({ required: true, ref: () => User })
   // owner: Ref<User>                          // This is a reference to a user
 
+
   @Field(() => String)
   @prop({ required: true })
   title: string
@@ -37,12 +38,12 @@ export class Piece {
   @prop({ required: true })
   slides: Slide[]
 
-  @Field(() => Theme)
-  @prop({ required: true })
-  theme: Theme
+  @Field(() => String)
+  @prop({ required: true , ref: () => Theme })
+  theme: Ref<Theme>
 }
 
-export const PieceModel = getModelForClass<typeof Piece>(Piece)
+export const PieceModel = getModelForClass<typeof Piece>(Piece, { schemaOptions: { timestamps: { createdAt: true }}})
 
 @InputType({ description: "The type used for creating a new piece" })
 export class CreatePieceInput {
@@ -58,8 +59,8 @@ export class CreatePieceInput {
   @Field(() => [ListSlideInput])
   slides: ListSlideInput[]
 
-  @Field(() => ListThemeInput)
-  theme: ListThemeInput
+  @Field(() => String)
+  theme: string
 
   // @MinLength(50, {
   //   message: "Description must be at least 50 characters",

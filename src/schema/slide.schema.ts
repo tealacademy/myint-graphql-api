@@ -1,11 +1,6 @@
 import { getModelForClass, modelOptions, index, Prop, prop, Ref } from "@typegoose/typegoose"
+import { TimeStamps } from "@typegoose/typegoose/lib/defaultClasses"
 import { Field, InputType, ObjectType, ID, Int } from "type-graphql"
-import { customAlphabet } from "nanoid"
-import { User } from "./user.schema"
-import { IsNumber, MaxLength, Min, MinLength } from "class-validator"
-import Context from "../types/context"
-
-const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz123456789", 10)
 
 @ObjectType({ description: "The slide model" })
 @modelOptions({options: {allowMixed: 0}}) 
@@ -13,7 +8,7 @@ export class Slide {
    @Field(type => ID)
    _id: string
 
-  // THe index of the slide in the array of slides of the Piece
+  // Tee index of the slide in the array of slides of the Piece
   @Field(() => Int)
   @prop({ required: true })
   index: number
@@ -50,7 +45,7 @@ class SlideObject {
   yPos: number
 }
 
-export const ThemeModel = getModelForClass<typeof Slide>(Slide)
+export const SlideModel = getModelForClass<typeof Slide>(Slide, { schemaOptions: { timestamps: { createdAt: true }}})
 
 // @InputType({ description: "The type used for creating a new slide" })
 // export class CreateSlideInput {
@@ -67,6 +62,8 @@ export const ThemeModel = getModelForClass<typeof Slide>(Slide)
 
 @InputType({ description: "The type used for creating a new slide" })
 export class ListSlideInput {
+  @Field()
+  slideID: string
 
   @Field(() => Int)
   index: number

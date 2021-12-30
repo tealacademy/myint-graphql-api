@@ -55,7 +55,7 @@ export class User {
   password: string
 }
 
-export const UserModel = getModelForClass<typeof User, QueryHelpers>(User);
+export const UserModel = getModelForClass<typeof User, QueryHelpers>(User, { schemaOptions: { timestamps: { createdAt: true }}});
 
 @InputType()
 export class CreateUserInput {

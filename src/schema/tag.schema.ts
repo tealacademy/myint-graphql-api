@@ -13,11 +13,13 @@ export class Tag {
   title: string
 }
 
-export const TagModel = getModelForClass<typeof Tag>(Tag)
-
+export const TagModel = getModelForClass<typeof Tag>(Tag, { schemaOptions: { timestamps: { createdAt: true }}})
 
 @InputType({ description: "The type used for creating a new tag" })
 export class CreateTagInput {
+  @Field()
+  tagID: string
+
   @Field()
   title: string
 }
@@ -25,5 +27,5 @@ export class CreateTagInput {
 @InputType({ description: "The type used for getting a tag" })
 export class GetTagInput {
   @Field()
-  tagId: string
+  title: string
 }

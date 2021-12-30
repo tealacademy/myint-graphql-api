@@ -11,11 +11,11 @@ export class Theme {
   title: string
 
   @Field(() => String)
-  @prop({ required: true })
-  css: string
+  @prop({ required: false })
+  cssfile: string
 }
 
-export const ThemeModel = getModelForClass<typeof Theme>(Theme)
+export const ThemeModel = getModelForClass<typeof Theme>(Theme, { schemaOptions: { timestamps: { createdAt: true }}})
 
 @InputType({ description: "The type used for creating a new theme" })
 export class CreateThemeInput {
@@ -23,14 +23,7 @@ export class CreateThemeInput {
   title: string
 
   @Field()
-  css: string
-}
-
-@InputType({ description: "The type used for linking a theme" })
-export class ListThemeInput {
-  
-  @Field()
-  themeID: string
+  cssfile: string
 }
 
 @InputType({ description: "The type used for getting a theme" })

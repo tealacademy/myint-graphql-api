@@ -1,4 +1,4 @@
-import { prop } from "@typegoose/typegoose"
+import { getModelForClass, prop } from "@typegoose/typegoose"
 import { Field, InputType, ObjectType, ID } from "type-graphql"
 
 @ObjectType({ description: "The edge model" })
@@ -18,6 +18,8 @@ export class Edge {
   @prop({ required: true })
   label: string
 }
+
+export const EdgeModel = getModelForClass<typeof Edge>(Edge, { schemaOptions: { timestamps: { createdAt: true }}})
 
 @InputType({ description: "The type used for creating a new edge" })
 export class CreateEdgeInput {

@@ -28,6 +28,7 @@ async function bootstrap() {
   // Build the schema
   const schema = await buildSchema({
     resolvers,
+    dateScalarMode: "timestamp", // "timestamp" or "isoDate"
     authChecker,
   })
 
