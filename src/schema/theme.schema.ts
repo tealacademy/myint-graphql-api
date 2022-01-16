@@ -1,9 +1,9 @@
-import { getModelForClass, index, Prop, prop, Ref } from "@typegoose/typegoose"
-import { Field, InputType, ObjectType, ID, Int } from "type-graphql"
+import { getModelForClass, index, Prop, prop, Ref } from '@typegoose/typegoose'
+import { Field, InputType, ObjectType, ID, Int } from 'type-graphql'
 
-@ObjectType({ description: "The theme model" })
+@ObjectType({ description: 'The theme model' })
 export class Theme {
-  @Field(type => ID)
+  @Field((type) => ID)
   _id: string
 
   @Field(() => String)
@@ -12,21 +12,21 @@ export class Theme {
 
   @Field(() => String)
   @prop({ required: false })
-  cssfile: string
+  layout: string
 }
 
-export const ThemeModel = getModelForClass<typeof Theme>(Theme, { schemaOptions: { timestamps: { createdAt: true }}})
+export const ThemeModel = getModelForClass<typeof Theme>(Theme, { schemaOptions: { timestamps: { createdAt: true } } })
 
-@InputType({ description: "The type used for creating a new theme" })
+@InputType({ description: 'The type used for creating a new theme' })
 export class CreateThemeInput {
   @Field()
   title: string
 
   @Field()
-  cssfile: string
+  layout: string
 }
 
-@InputType({ description: "The type used for getting a theme" })
+@InputType({ description: 'The type used for getting a theme' })
 export class GetThemeInput {
   @Field()
   themeID: string
