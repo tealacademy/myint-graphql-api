@@ -30,16 +30,16 @@ export class Piece {
   deepMyint: string
 
   @Field(() => [Tag])
-  @prop({ required: true, ref: () => Tag })
-  tags: Ref<Tag>[]
+  @prop({ required: true })
+  tags: Tag[]
 
   @Field(() => [Slide])
-  @prop({ required: true, ref: () => Slide })
-  slides: Ref<Slide>[]
+  @prop({ required: true })
+  slides: Slide[]
 
   @Field(() => Theme)
-  @prop({ required: true, ref: () => Theme })
-  theme: Ref<Theme>
+  @prop({ required: true })
+  theme: Theme
 
   @Field((type) => Int)
   @prop({ required: true })

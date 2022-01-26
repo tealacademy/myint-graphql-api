@@ -34,8 +34,8 @@ export class Frame {
 
   // The tags associated with this frame.
   @Field(() => [Tag])
-  @prop({ required: true, ref: () => Tag })
-  tags: Ref<Tag>[]
+  @prop({ required: true })
+  tags: Tag[]
 
   @Field(() => String)
   @prop({ required: false })
