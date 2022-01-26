@@ -5,16 +5,15 @@ import { ApolloError } from 'apollo-server-errors'
 import bcrypt from 'bcrypt'
 import { nanoid } from 'nanoid'
 import { CreateUserInput, LoginInput, UserModel, User } from '../schema/user.schema'
-import { ProfileModel } from '../schema/profile.schema'
 import EdgeService from '../service/edge.service'
 import ProfileService from '../service/profile.service'
 import Context from '../types/context'
 import { signJwt } from '../utils/jwt'
 import jwt from 'jsonwebtoken'
 import config from 'config'
-import { CookieOptions } from 'express'
 import nodemailer from 'nodemailer'
-
+import LogService from './log.service'
+import { LOG_EDGES, USER_EDGES, LOG_ACTIONS, ERROR_MESSAGES } from '../types/message.label'
 const EMAIL_SECRET = 'asdf1093KMnzxcvnkljvasdu09123nlasdasdf'
 class UserService {
   async createUser(input: CreateUserInput) {
@@ -30,10 +29,11 @@ class UserService {
     const newUser = await UserModel.create({ ...input, profile: newProfile, confirmToken })
     console.log(newUser)
 
-    // const edgeService = new EdgeService()
-    const newEdge = new EdgeService().createEdge({ ...input, nodeA: newUser._id, nodeB: newProfile.id, label: 'user_profile' })
+    const createEdge = new EdgeService().createEdge({ nodeA: newUser._id, nodeB: newProfile.id, label: USER_EDGES.USER_PROFILE })
 
-    console.log(newEdge)
+    const dataString = JSON.stringify(`{confirmToken: ${confirmToken}`)
+    const newLog = new LogService().createLog({ action: LOG_ACTIONS.CREATE_USER, data: dataString }, newUser, LOG_EDGES.USER_LOG_ITEM)
+
     return newUser
   }
 
@@ -62,12 +62,15 @@ class UserService {
         })
         transporter.sendMail({
           from: `MyinT <${process.env.EMAIL_USER}>`,
-          to: `${result.profile.firstname} <${result.email}>`,
+          to: `${result.profile.firstName} <${result.eMail}>`,
           subject: 'Activate your MyinT',
           html: `Please click this link to activate your MyinT: <a href="${url}">${url}</a>`,
         })
       }
     )
+    const dataString = JSON.stringify(`{to: ${result.profile.firstName} <${result.eMail}>`)
+    const newLog = new LogService().createLog({ action: LOG_ACTIONS.REGISTER_USER, data: dataString }, result, LOG_EDGES.USER_LOG_ITEM)
+
     return result
   }
 
@@ -86,34 +89,39 @@ class UserService {
       // Save the user
       await user.save()
 
-      // return user
+      const dataString = JSON.stringify(`{confirmToken: ${user.confirmToken}}`)
+      const newLog = new LogService().createLog({ action: LOG_ACTIONS.CONFIRM_USER, data: dataString }, user, LOG_EDGES.USER_LOG_ITEM)
+
       return user
     } catch (e) {
-      throw new Error('Email or confirm token are incorrect')
+      throw new Error(ERROR_MESSAGES.EMAIL_CONFIRM_INCORRECT)
     }
   }
 
   async login(input: LoginInput, context: Context) {
     // Get our user by email. lean means we don't need to use any of the methods on this user
-    const user = await UserModel.find().findByEmail(input.email)
+    const user = await UserModel.find().findByEmail(input.eMail)
 
     if (!user) {
-      throw new ApolloError('Invalid email-address or password')
+      throw new ApolloError(ERROR_MESSAGES.EMAIL_PASSWORD_INCORRECT)
     }
 
     // validate the password
-    const passwordIsValid = await bcrypt.compare(input.password, user.password)
+    const passwordIsValid = await bcrypt.compare(input.passWord, user.passWord)
 
     if (!passwordIsValid) {
-      throw new ApolloError('Invalid email-address or password')
+      throw new ApolloError(ERROR_MESSAGES.EMAIL_PASSWORD_INCORRECT)
     }
 
     if (!user.active) {
-      throw new ApolloError('Please confirm your email-address')
+      throw new ApolloError(ERROR_MESSAGES.CONFIRM_EMAIL)
     }
 
     // sign a jwt
-    const token = signJwt(omit(user.toJSON(), ['password', 'active']))
+    const token = signJwt(omit(user.toJSON(), ['passWord', 'active']))
+
+    const dataString = JSON.stringify(`{accessToken: ${token}}`)
+    const newLog = new LogService().createLog({ action: LOG_ACTIONS.LOGIN_USER, data: dataString }, user, LOG_EDGES.USER_LOG_ITEM)
 
     // return the jwt-token
     return token
@@ -122,8 +130,10 @@ class UserService {
   async logout(context: Context) {
     // not necessary? can be handled on client-side
     // by throwing out accesstoken
-    // context.res.cookie('accessToken', '', { ...cookieOptions, maxAge: 0 })
 
+    if (context.user) {
+      const newLog = new LogService().createLog({ action: LOG_ACTIONS.LOGOUT_USER, data: '' }, context.user, LOG_EDGES.USER_LOG_ITEM)
+    }
     return null
   }
 }

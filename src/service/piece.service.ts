@@ -3,6 +3,7 @@ import TagService from '../service/tag.service'
 import SlideService from '../service/slide.service'
 import EdgeService from '../service/edge.service'
 import { User } from '../schema/user.schema'
+import { PIECE_EDGES } from '../types/message.label'
 
 class PieceService {
   // Create complete document with filled 1:n relations for tags, slides
@@ -13,21 +14,21 @@ class PieceService {
     const tagService = new TagService()
     for (const tag of input.tags) {
       // If no ID, we need to create tag
-      if (tag.tagID === '') {
+      if (tag.tagId === '') {
         const nodeB = await tagService.createTag(tag)
         // set ID of tag in piece
-        tag.tagID = nodeB._id
+        tag.tagId = nodeB._id
       }
     }
 
     // Add slides
     const slideService = new SlideService()
     for (const slide of input.slides) {
-      // If no ID, we need to create tag
-      if (slide.slideID === '') {
+      // If no ID, we need to create slide
+      if (slide.slideId === '') {
         const nodeB = await slideService.createSlide(slide)
         // set ID of tag in piece
-        slide.slideID = nodeB._id
+        slide.slideId = nodeB._id
       }
     }
 
@@ -36,10 +37,10 @@ class PieceService {
     const edgeService = new EdgeService()
     // Create edges between tag(s) en piece
     for (const tag of input.tags) {
-      const edge = edgeService.createEdge({ ...input, nodeA: piece._id, nodeB: tag.tagID, label: 'piece_tag' })
+      const edge = edgeService.createEdge({ ...input, nodeA: piece._id, nodeB: tag.tagId, label: PIECE_EDGES.PIECE_TAG })
     }
     for (const slide of input.slides) {
-      const edge = edgeService.createEdge({ ...input, nodeA: piece._id, nodeB: slide.slideID, label: 'piece_slide' })
+      const edge = edgeService.createEdge({ ...input, nodeA: piece._id, nodeB: slide.slideId, label: PIECE_EDGES.PIECE_SLIDE })
     }
 
     return piece

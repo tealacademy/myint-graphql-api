@@ -1,13 +1,15 @@
-import { Arg, Ctx, Mutation, Query, Resolver } from 'type-graphql'
+import { Arg, Ctx, Authorized, Mutation, Query, Resolver } from 'type-graphql'
 import { CreateUserInput, LoginInput, User } from '../schema/user.schema'
 import UserService from '../service/user.service'
+import ProfileService from '../service/profile.service'
 import Context from '../types/context'
 
 // grapQL does not know this will be a resolver so we add @Resolver() (from type-graphql)
 @Resolver()
 export default class UserResolver {
-  constructor(private userService: UserService) {
+  constructor(private userService: UserService, private profileService: ProfileService) {
     this.userService = new UserService()
+    this.profileService = new ProfileService()
   }
 
   @Mutation(() => User)
@@ -15,21 +17,18 @@ export default class UserResolver {
     return this.userService.registerUser(input)
   }
 
-  // @Mutation(() => User, { nullable: true })
-  // confirmUser(@Arg('input') input: ConfirmUserInput) {
-  //   return this.userService.confirmUser(input)
-  // }
-
   @Query(() => String) // Returns the JWT
   login(@Arg('input') input: LoginInput, @Ctx() context: Context) {
     return this.userService.login(input, context)
   }
 
+  @Authorized()
   @Query(() => User, { nullable: true }) // currently logged in user
   me(@Ctx() context: Context) {
     return context.user // https://www.youtube.com/watch?v=PXwnT25SZro does this differently
   }
 
+  @Authorized()
   @Query(() => User, { nullable: true })
   logout(@Ctx() context: Context) {
     return this.userService.logout(context)

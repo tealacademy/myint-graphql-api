@@ -1,12 +1,12 @@
-import { getModelForClass, modelOptions, index, Prop, prop, Ref } from "@typegoose/typegoose"
-import { TimeStamps } from "@typegoose/typegoose/lib/defaultClasses"
-import { Field, InputType, ObjectType, ID, Int } from "type-graphql"
+import { getModelForClass, modelOptions, index, Prop, prop, Ref } from '@typegoose/typegoose'
+import { TimeStamps } from '@typegoose/typegoose/lib/defaultClasses'
+import { Field, InputType, ObjectType, ID, Int } from 'type-graphql'
 
-@ObjectType({ description: "The slide model" })
-@modelOptions({options: {allowMixed: 0}}) 
+@ObjectType({ description: 'The slide model' })
+@modelOptions({ options: { allowMixed: 0 } })
 export class Slide {
-   @Field(type => ID)
-   _id: string
+  @Field((type) => ID)
+  _id: string
 
   // Tee index of the slide in the array of slides of the Piece
   @Field(() => Int)
@@ -20,9 +20,12 @@ export class Slide {
   @Field(() => Boolean)
   @prop({ required: false })
   show: boolean
+
+  @prop({ required: true, nullable: true, default: null })
+  deleted: Date
 }
 
-@ObjectType({ description: "The slide-object model" })
+@ObjectType({ description: 'The slide-object model' })
 class SlideObject {
   @Field(() => String)
   @prop({ required: true })
@@ -45,38 +48,37 @@ class SlideObject {
   yPos: number
 }
 
-export const SlideModel = getModelForClass<typeof Slide>(Slide, { schemaOptions: { timestamps: { createdAt: true }}})
+export const SlideModel = getModelForClass<typeof Slide>(Slide, { schemaOptions: { timestamps: { createdAt: true } } })
 
-// @InputType({ description: "The type used for creating a new slide" })
-// export class CreateSlideInput {
-
-//   @Field(() => Int)
-//   index: number
-
-//   @Field(() => ListSlideObjectInput)
-//   slideObjects: ListSlideObjectInput[]
-
-//   @Field(() => Boolean)
-//   show: boolean
-// }
-
-@InputType({ description: "The type used for creating a new slide" })
-export class ListSlideInput {
-  @Field()
-  slideID: string
-
+@InputType({ description: 'The type used for creating a new slide' })
+export class CreateSlideInput {
   @Field(() => Int)
   index: number
 
-  @Field(() => [ListSlideObjectInput])
+  @Field(() => ListSlideObjectInput)
   slideObjects: ListSlideObjectInput[]
 
   @Field(() => Boolean)
   show: boolean
 }
 
-@InputType({ description: "The type used for creating the slide-objects in a new slide" })
-export class ListSlideObjectInput {
+@InputType({ description: 'The type used for creating a new slide' })
+export class ListSlideInput implements Partial<Slide> {
+  @Field()
+  slideId: string
+
+  @Field(() => Int)
+  index: number
+
+  @Field(() => [ListSlideObjectInput])
+  slideObjects: SlideObject[]
+
+  @Field(() => Boolean)
+  show: boolean
+}
+
+@InputType({ description: 'The type used for creating the slide-objects in a new slide' })
+export class ListSlideObjectInput implements Partial<SlideObject> {
   @Field(() => String)
   kind: string
 
@@ -93,7 +95,7 @@ export class ListSlideObjectInput {
   location: string
 }
 
-@InputType({ description: "The type used for getting a slide" })
+@InputType({ description: 'The type used for getting a slide' })
 export class GetSlideInput {
   @Field()
   slideId: string

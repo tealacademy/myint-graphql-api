@@ -2,10 +2,10 @@ import { getModelForClass, prop, pre, ReturnModelType, queryMethod, index } from
 import { AsQueryMethod } from '@typegoose/typegoose/lib/types'
 import bcrypt from 'bcrypt'
 import { IsEmail, MaxLength, MinLength } from 'class-validator'
-import { Field, InputType, ObjectType, ID } from 'type-graphql'
+import { Field, InputType, ObjectType, ID, Int } from 'type-graphql'
 import { Profile, GetProfileInput } from './profile.schema'
 
-function findByEmail(this: ReturnModelType<typeof User, QueryHelpers>, email: User['email']) {
+function findByEmail(this: ReturnModelType<typeof User, QueryHelpers>, email: User['eMail']) {
   return this.findOne({ email })
 }
 
@@ -21,8 +21,8 @@ interface QueryHelpers {
   }
   // encrypt the password
   const salt = await bcrypt.genSalt(10)
-  const hash = bcrypt.hashSync(this.password, salt)
-  this.password = hash
+  const hash = bcrypt.hashSync(this.passWord, salt)
+  this.passWord = hash
 })
 @index({ email: 1 })
 @queryMethod(findByEmail) // We find users by email
@@ -34,10 +34,10 @@ export class User {
 
   @Field(() => String)
   @prop({ required: true, unique: true })
-  email: string
+  eMail: string
 
   @prop({ required: true })
-  password: string
+  passWord: string
 
   @Field(() => Profile)
   @prop({ required: true })
@@ -49,15 +49,18 @@ export class User {
 
   @prop({ required: true, default: false })
   active: boolean
+
+  @prop({ required: true, nullable: true, default: null })
+  deleted: Date
 }
 
 export const UserModel = getModelForClass<typeof User, QueryHelpers>(User, { schemaOptions: { timestamps: { createdAt: true } } })
 
 @InputType({ description: 'The type used for creating a new user' })
-export class CreateUserInput {
+export class CreateUserInput implements Partial<User> {
   @IsEmail()
   @Field(() => String)
-  email: string
+  eMail: string
 
   @MinLength(6, {
     message: 'password must be at least 6 characters long',
@@ -66,26 +69,17 @@ export class CreateUserInput {
     message: 'password can not be longer than 50 characters',
   })
   @Field(() => String)
-  password: string
+  passWord: string
 
   @Field(() => GetProfileInput)
   profile: Profile
 }
 
-// @InputType()
-// export class ConfirmUserInput {
-//   @Field(() => String)
-//   email: string
-
-//   @Field(() => String)
-//   confirmToken: string
-// }
-
 @InputType()
 export class LoginInput {
   @Field(() => String)
-  email: string
+  eMail: string
 
   @Field(() => String)
-  password: string
+  passWord: string
 }

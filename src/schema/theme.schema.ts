@@ -13,21 +13,24 @@ export class Theme {
   @Field(() => String)
   @prop({ required: false })
   layout: string
+
+  @prop({ required: true, nullable: true, default: null })
+  deleted: Date
 }
 
 export const ThemeModel = getModelForClass<typeof Theme>(Theme, { schemaOptions: { timestamps: { createdAt: true } } })
 
 @InputType({ description: 'The type used for creating a new theme' })
-export class CreateThemeInput {
-  @Field()
+export class CreateThemeInput implements Partial<Theme> {
+  @Field(() => String)
   title: string
 
-  @Field()
+  @Field(() => String)
   layout: string
 }
 
 @InputType({ description: 'The type used for getting a theme' })
 export class GetThemeInput {
-  @Field()
+  @Field(() => String)
   themeID: string
 }
