@@ -13,16 +13,33 @@ export default class PieceResolver {
   @Mutation(() => Piece)
   createPiece(@Arg('input') input: CreatePieceInput, @Ctx() context: Context) {
     const user = context.user!
-    return this.pieceService.createPiece({ ...input, user: user?._id })
+    return this.pieceService.createPiece({ ...input, owner: user._id })
   }
 
+  @Authorized()
   @Query(() => [Piece])
-  pieces() {
-    return this.pieceService.findPieces()
+  getPieces(@Ctx() context: Context) {
+    const user = context.user!
+    return this.pieceService.findUserPieces(user._id)
   }
 
+  @Authorized()
   @Query(() => Piece)
-  piece(@Arg('input') input: GetPieceInput, @Ctx() context: Context) {
-    return this.pieceService.findSinglePiece(input)
+  getPiece(@Arg('input') input: GetPieceInput, @Ctx() context: Context) {
+    const user = context.user!
+    return this.pieceService.findSingleUserPiece({ ...input, owner: user._id })
+  }
+
+  @Mutation(() => Boolean)
+  destroyLoosePieceObjects() {
+    console.log('piece resolver')
+    return this.pieceService.destroyLoosePieceObjects()
+  }
+
+  @Authorized()
+  @Mutation(() => Boolean)
+  destroyUserPiece(@Arg('input') input: GetPieceInput, @Ctx() context: Context) {
+    const user = context.user!
+    return this.pieceService.destroyUserPiece({ ...input, owner: user._id })
   }
 }

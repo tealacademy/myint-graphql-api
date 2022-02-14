@@ -20,7 +20,7 @@ class SlideService {
   }
 
   /** Creates slides that do not exist yet and adjusts the input */
-  async handleSlideList(inputSlides: CreateSlideInput[]) {
+  async handleClueList(inputSlides: CreateSlideInput[]) {
     console.log('slides', inputSlides)
 
     const newSlides = []

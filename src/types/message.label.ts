@@ -1,6 +1,16 @@
 export enum PIECE_EDGES {
   PIECE_TAG = 'piece_tag',
   PIECE_SLIDE = 'piece_slide',
+  PIECE_OWNER = 'piece_owner',
+}
+
+export enum FRAME_EDGES {
+  FRAME_TAG = 'frame_tag',
+  FRAME_OWNER = 'frame_owner',
+}
+
+export enum TAG_EDGES {
+  USER_TAG = 'user_tag',
 }
 
 export enum LOG_EDGES {
@@ -8,7 +18,7 @@ export enum LOG_EDGES {
 }
 
 export enum LOG_ACTIONS {
-  LOGIN_USER = 'Login user',
+  LOGIN_USER = 'login user',
   LOGOUT_USER = 'Logout user',
   CONFIRM_USER = 'Confirm user',
   REGISTER_USER = 'Register user',

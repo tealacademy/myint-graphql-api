@@ -1,4 +1,4 @@
-import { getModelForClass, index, Prop, prop, Ref } from '@typegoose/typegoose'
+import { getModelForClass, prop } from '@typegoose/typegoose'
 import { Field, InputType, ObjectType, ID, Int } from 'type-graphql'
 
 @ObjectType({ description: 'The theme model' })
@@ -8,14 +8,14 @@ export class Theme {
 
   @Field(() => String)
   @prop({ required: true })
-  title: string
+  name: string
 
   @Field(() => String)
   @prop({ required: false })
   layout: string
 
-  @prop({ required: true, nullable: true, default: null })
-  deleted: Date
+  @prop({ required: false })
+  deleted?: Date
 }
 
 export const ThemeModel = getModelForClass<typeof Theme>(Theme, { schemaOptions: { timestamps: { createdAt: true } } })
@@ -23,7 +23,7 @@ export const ThemeModel = getModelForClass<typeof Theme>(Theme, { schemaOptions:
 @InputType({ description: 'The type used for creating a new theme' })
 export class CreateThemeInput implements Partial<Theme> {
   @Field(() => String)
-  title: string
+  name: string
 
   @Field(() => String)
   layout: string
@@ -32,5 +32,5 @@ export class CreateThemeInput implements Partial<Theme> {
 @InputType({ description: 'The type used for getting a theme' })
 export class GetThemeInput {
   @Field(() => String)
-  themeID: string
+  Id: string
 }

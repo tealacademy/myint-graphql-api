@@ -2,9 +2,9 @@ import { getModelForClass, index, isRefType, isRefTypeArray, modelOptions, Prop,
 import { Field, InputType, ObjectType, ID, Int } from 'type-graphql'
 import { customAlphabet } from 'nanoid'
 import { User } from './user.schema'
-import { Slide, ListSlideInput } from './slide.schema'
+import { Slide, CreateSlideInput } from './slide.schema'
 import { Theme } from './theme.schema'
-import { Tag, ListTagInput } from './tag.schema'
+import { Tag, CreateTagInput } from './tag.schema'
 import { IsNumber, MaxLength, Min, MinLength, IsUrl, IsArray, ValidateNested, IsObject } from 'class-validator'
 import Context from './../types/context'
 
@@ -27,7 +27,7 @@ export class Piece {
 
   @Field(() => String)
   @prop({ required: false })
-  deepMyint: string
+  deepMyinT?: string
 
   @Field(() => [Tag])
   @prop({ required: true })
@@ -38,15 +38,23 @@ export class Piece {
   slides: Slide[]
 
   @Field(() => Theme)
-  @prop({ required: true })
-  theme: Theme
+  @prop({ required: false, ref: () => Theme })
+  theme?: Ref<Theme>
 
   @Field((type) => Int)
   @prop({ required: true })
   version: number
 
-  @prop({ required: true, nullable: true, default: null })
-  deleted: Date
+  @Field(() => Boolean)
+  @prop({ required: false, defaultValue: false })
+  autoPlay?: boolean
+
+  @Field(() => Boolean)
+  @prop({ required: true, defaultValue: false })
+  updateWithOriginal: boolean
+
+  @prop({ required: false })
+  deleted?: Date
 }
 
 export const PieceModel = getModelForClass<typeof Piece>(Piece, { schemaOptions: { timestamps: { createdAt: true } } })
@@ -60,23 +68,35 @@ export class CreatePieceInput {
   owner: string
 
   @Field(() => String)
-  deepMyint: string
+  deepMyinT?: string
 
-  @Field(() => [ListTagInput])
-  tags: ListTagInput[]
+  @Field(() => [CreateTagInput])
+  tags: CreateTagInput[]
 
-  @Field(() => [ListSlideInput])
-  slides: ListSlideInput[]
+  @Field(() => [CreateSlideInput])
+  slides: CreateSlideInput[]
 
   @Field(() => String)
-  theme: string
+  theme?: string
 
   @Field(() => Number)
   version: number
+
+  @Field(() => Boolean)
+  autoPlay?: boolean
+
+  @Field(() => Boolean)
+  updateWithOriginal: boolean
 }
 
-@InputType({ description: 'The type used for getting a piece' })
+@InputType({ description: 'The type used for adding an existing piece to a list in another object' })
+export class ListPieceInput {
+  @Field(() => String)
+  Id: string
+}
+
+@InputType({ description: 'The type used for getting a single piece' })
 export class GetPieceInput {
   @Field(() => String)
-  pieceId: string
+  Id: string
 }

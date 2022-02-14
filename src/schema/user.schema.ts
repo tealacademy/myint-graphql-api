@@ -1,9 +1,10 @@
-import { getModelForClass, prop, pre, ReturnModelType, queryMethod, index } from '@typegoose/typegoose' // see https://typegoose.github.io/typegoose/
+import { getModelForClass, prop, pre, ReturnModelType, queryMethod, modelOptions, index } from '@typegoose/typegoose' // see https://typegoose.github.io/typegoose/
 import { AsQueryMethod } from '@typegoose/typegoose/lib/types'
 import bcrypt from 'bcrypt'
 import { IsEmail, MaxLength, MinLength } from 'class-validator'
 import { Field, InputType, ObjectType, ID, Int } from 'type-graphql'
-import { Profile, GetProfileInput } from './profile.schema'
+import { Profile, CreateProfileInput } from './profile.schema'
+import { Group } from './group.schema'
 
 function findByEmail(this: ReturnModelType<typeof User, QueryHelpers>, email: User['eMail']) {
   return this.findOne({ email })
@@ -27,6 +28,7 @@ interface QueryHelpers {
 @index({ email: 1 })
 @queryMethod(findByEmail) // We find users by email
 @ObjectType({ description: 'The user model' }) // grapQL does not know this will be an object so we add @Object() (from type-graphql)
+@modelOptions({ options: { allowMixed: 0 } })
 export class User {
   // These @Fields can be accessed with grapQL
   @Field((type) => ID)
@@ -47,17 +49,25 @@ export class User {
   @prop({ required: true })
   confirmToken: string
 
+  @Field(() => [Number])
+  @prop({ required: true, default: [] })
+  roles: number[]
+
+  @Field(() => [Group])
+  @prop({ required: true, default: [] })
+  groups: Group[]
+
   @prop({ required: true, default: false })
   active: boolean
 
-  @prop({ required: true, nullable: true, default: null })
-  deleted: Date
+  @prop({ required: false })
+  deleted?: Date
 }
 
 export const UserModel = getModelForClass<typeof User, QueryHelpers>(User, { schemaOptions: { timestamps: { createdAt: true } } })
 
 @InputType({ description: 'The type used for creating a new user' })
-export class CreateUserInput implements Partial<User> {
+export class CreateUserInput {
   @IsEmail()
   @Field(() => String)
   eMail: string
@@ -71,8 +81,8 @@ export class CreateUserInput implements Partial<User> {
   @Field(() => String)
   passWord: string
 
-  @Field(() => GetProfileInput)
-  profile: Profile
+  @Field(() => CreateProfileInput)
+  profile: CreateProfileInput
 }
 
 @InputType()

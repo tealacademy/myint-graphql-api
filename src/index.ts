@@ -53,11 +53,13 @@ async function bootstrap() {
         const token = authHeader.split(' ')[1]
 
         if (token) {
+          // console.log('verifyJWT')
           const user = verifyJwt<User>(token)
 
           context.user = user // When user in context, @Authorised will validate in resolver
         }
       }
+      // console.log(context)
       return context
     },
     // Use the PlayGround in DEV mode

@@ -1,8 +1,11 @@
 import { getModelForClass, modelOptions, index, Prop, prop, Ref } from '@typegoose/typegoose'
-import { Tag } from './tag.schema'
+import { Tag, CreateTagInput } from './tag.schema'
 import { Piece } from './piece.schema'
 import { User } from './user.schema'
-import { Clue, ListClueInput } from './clue.schema'
+import { Challenge, CreateChallengeInput } from './challenge.schema'
+import { MyinTSet } from './myintset.schema'
+import { Clue, CreateClueInput } from './clue.schema'
+import { CreateMyinTSetInput } from './myintset.schema'
 import { Field, InputType, ObjectType, ID, Int, createUnionType } from 'type-graphql'
 
 export const cluePiecesFramesList = createUnionType({
@@ -24,13 +27,13 @@ export class Frame {
   @prop({ required: true })
   title: string
 
-  @Field(() => Challenge)
+  @Field(() => Challenge) // A frame has 0 or 1 challenge
   @prop({ required: false })
-  challenge: Challenge
+  challenge?: Challenge
 
   @Field(() => [Clue])
   @prop({ required: false })
-  clues: Clue[]
+  clues?: Clue[]
 
   // The tags associated with this frame.
   @Field(() => [Tag])
@@ -39,35 +42,36 @@ export class Frame {
 
   @Field(() => String)
   @prop({ required: false })
-  conclusion: string
+  conclusion?: string
 
-  @prop({ required: true, nullable: true, default: null })
-  deleted: Date
-}
+  @Field(() => Boolean)
+  @prop({ required: true, default: false })
+  starred: boolean
 
-@ObjectType({ description: 'The challenge-object model' })
-class Challenge {
-  @Field((type) => ID)
-  _id: string
-
-  @Field(() => User) // Remove if field not publicly accessible?
-  @prop({ required: true, ref: () => User })
-  owner: Ref<User> // This is a reference to a user
+  @Field(() => MyinTSet) // A frame has 0 or 1 challenge
+  @prop({ required: false })
+  myinTSet?: MyinTSet
 
   @Field(() => String)
+  @prop({ required: true, nullable: true })
+  settings: string
+
+  @Field(() => Int)
   @prop({ required: true })
-  question: string
+  status: number
 
-  @Field(() => String)
-  @prop({ required: false })
-  narrative: string
+  @Field(() => Int)
+  @prop({ required: true })
+  version: number
 
-  @Field(() => [Frame])
+  @Field(() => Boolean)
+  @prop({ required: true, defaultValue: false })
+  updateWithOriginal: boolean
+
   @prop({ required: false })
-  frames: Frame[]
+  deleted?: Date
 }
 
-export const ChallengeModel = getModelForClass<typeof Challenge>(Challenge, { schemaOptions: { timestamps: { createdAt: true } } })
 export const FrameModel = getModelForClass<typeof Frame>(Frame, { schemaOptions: { timestamps: { createdAt: true } } })
 
 @InputType({ description: 'The type used for creating a new frame' })
@@ -75,33 +79,48 @@ export class CreateFrameInput {
   @Field(() => String)
   title: string
 
-  @Field(() => Challenge)
-  challenge: Challenge
+  @Field(() => String)
+  owner: string
 
-  @Field(() => [ListClueInput])
-  clues: ListClueInput[]
+  @Field(() => CreateChallengeInput)
+  challenge: CreateChallengeInput
 
-  @Field(() => Tag)
-  tags: Ref<Tag>
-}
+  @Field(() => [CreateClueInput])
+  clues: CreateClueInput[]
 
-@InputType({ description: 'The type used for creating a new frame' })
-export class ListFrameInput implements Partial<Frame> {
-  @Field()
-  frameId: string
+  @Field(() => [CreateTagInput])
+  tags: CreateTagInput[]
 
-  @Field(() => Int)
-  index: number
+  @Field(() => String, { nullable: true })
+  conclusion?: string
 
-  @Field(() => [ListClueInput])
-  clues: Clue[]
+  @Field(() => Boolean, { defaultValue: false })
+  starred: boolean
+
+  @Field(() => CreateMyinTSetInput, { nullable: true })
+  myinTSet?: CreateMyinTSetInput
+
+  @Field(() => String, { nullable: true })
+  settings: string
 
   @Field(() => Boolean)
-  show: boolean
+  updateWithOriginal: boolean
+
+  @Field(() => Int)
+  status: number
+
+  @Field(() => Int)
+  version: number
+}
+
+@InputType({ description: 'The type used for adding a frame' })
+export class ListFrameInput {
+  @Field()
+  Id: string
 }
 
 @InputType({ description: 'The type used for getting a frame' })
 export class GetFrameInput {
   @Field()
-  frameId: string
+  Id: string
 }

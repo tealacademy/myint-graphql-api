@@ -8,73 +8,66 @@ export class Slide {
   @Field((type) => ID)
   _id: string
 
-  // Tee index of the slide in the array of slides of the Piece
-  @Field(() => Int)
-  @prop({ required: true })
-  index: number
-
   @Field(() => [SlideObject])
   @prop({ required: false })
-  slideObjects: SlideObject[]
+  slideObjects?: SlideObject[]
 
   @Field(() => Boolean)
-  @prop({ required: false })
-  show: boolean
+  @prop({ required: false, default: true })
+  show?: boolean
 
-  @prop({ required: true, nullable: true, default: null })
-  deleted: Date
+  @prop({ required: false })
+  deleted?: Date
 }
 
 @ObjectType({ description: 'The slide-object model' })
 class SlideObject {
+  // In case of kind, the field data contains:
+  // 1. text: textline
+  // 2. picture: location
+  // 3. url: url
+  // 4. video: location
   @Field(() => String)
   @prop({ required: true })
   kind: string
 
+  // 1: text
+  // 2: png, jpg etc
+  // 3: http, ftp
+  // 4: youtube, vimeo, file etc.
   @Field(() => String)
-  @prop({ required: false })
-  textLine: string
+  @prop({ required: true })
+  kindType: string
 
   @Field(() => String)
   @prop({ required: false })
-  location: string
+  data?: string
 
   @Field(() => Int)
   @prop({ required: false })
-  xPos: number
+  xPos?: number
 
   @Field(() => Int)
   @prop({ required: false })
-  yPos: number
+  yPos?: number
+
+  @Field(() => Boolean)
+  @prop({ required: false, default: true })
+  show?: boolean
 }
 
 export const SlideModel = getModelForClass<typeof Slide>(Slide, { schemaOptions: { timestamps: { createdAt: true } } })
 
 @InputType({ description: 'The type used for creating a new slide' })
 export class CreateSlideInput {
-  @Field(() => Int)
-  index: number
-
-  @Field(() => ListSlideObjectInput)
-  slideObjects: ListSlideObjectInput[]
-
-  @Field(() => Boolean)
-  show: boolean
-}
-
-@InputType({ description: 'The type used for creating a new slide' })
-export class ListSlideInput implements Partial<Slide> {
   @Field()
-  slideId: string
-
-  @Field(() => Int)
-  index: number
+  Id: string
 
   @Field(() => [ListSlideObjectInput])
-  slideObjects: SlideObject[]
+  slideObjects?: ListSlideObjectInput[]
 
   @Field(() => Boolean)
-  show: boolean
+  show?: boolean
 }
 
 @InputType({ description: 'The type used for creating the slide-objects in a new slide' })
@@ -82,21 +75,24 @@ export class ListSlideObjectInput implements Partial<SlideObject> {
   @Field(() => String)
   kind: string
 
-  @Field(() => String, { nullable: true })
-  textLine: string
-
-  @Field(() => Int, { nullable: true })
-  xPos: number
-
-  @Field(() => Int, { nullable: true })
-  yPos: number
+  @Field(() => String)
+  kindType: string
 
   @Field(() => String, { nullable: true })
-  location: string
+  data?: string
+
+  @Field(() => Int, { nullable: true })
+  xPos?: number
+
+  @Field(() => Int, { nullable: true })
+  yPos?: number
+
+  @Field(() => Boolean)
+  show?: boolean
 }
 
 @InputType({ description: 'The type used for getting a slide' })
 export class GetSlideInput {
-  @Field()
-  slideId: string
+  @Field(() => String)
+  Id: string
 }

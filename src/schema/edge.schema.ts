@@ -1,4 +1,4 @@
-import { getModelForClass, prop } from '@typegoose/typegoose'
+import { getModelForClass, prop, Ref } from '@typegoose/typegoose'
 import { Field, InputType, ObjectType, ID } from 'type-graphql'
 
 @ObjectType({ description: 'The edge model' })
@@ -7,19 +7,19 @@ export class Edge {
   _id: string
 
   @Field(() => String)
-  @prop({ required: true })
-  nodeA: string
+  @prop({ required: true, ref: () => String })
+  nodeA: Ref<string>
 
   @Field(() => String)
-  @prop({ required: true })
-  nodeB: string
+  @prop({ required: true, ref: () => String })
+  nodeB: Ref<string>
 
   @Field(() => String)
   @prop({ required: true })
   label: string
 
-  @prop({ required: true, nullable: true, default: null })
-  deleted: Date
+  @prop({ required: false })
+  deleted?: Date
 }
 
 export const EdgeModel = getModelForClass<typeof Edge>(Edge, { schemaOptions: { timestamps: { createdAt: true } } })
@@ -39,11 +39,14 @@ export class CreateEdgeInput {
 @InputType({ description: 'The type used for getting an edge' })
 export class GetEdgeInput {
   @Field({ nullable: true })
-  nodeA: string
+  Id?: string
 
   @Field({ nullable: true })
-  nodeB: string
+  nodeA?: string
 
   @Field({ nullable: true })
-  label: string
+  nodeB?: string
+
+  @Field({ nullable: true })
+  label?: string
 }

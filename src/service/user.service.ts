@@ -15,6 +15,7 @@ import nodemailer from 'nodemailer'
 import LogService from './log.service'
 import { LOG_EDGES, USER_EDGES, LOG_ACTIONS, ERROR_MESSAGES } from '../types/message.label'
 const EMAIL_SECRET = 'asdf1093KMnzxcvnkljvasdu09123nlasdasdf'
+
 class UserService {
   async createUser(input: CreateUserInput) {
     console.log('createUser')
@@ -124,6 +125,7 @@ class UserService {
     const newLog = new LogService().createLog({ action: LOG_ACTIONS.LOGIN_USER, data: dataString }, user, LOG_EDGES.USER_LOG_ITEM)
 
     // return the jwt-token
+
     return token
   }
 
