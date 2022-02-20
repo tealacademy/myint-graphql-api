@@ -1,4 +1,4 @@
-import { getModelForClass, modelOptions, index, Prop, prop, Ref } from '@typegoose/typegoose'
+import { getModelForClass, modelOptions, prop, Ref } from '@typegoose/typegoose'
 import { Tag, CreateTagInput } from './tag.schema'
 import { Piece } from './piece.schema'
 import { User } from './user.schema'
@@ -7,11 +7,6 @@ import { MyinTSet } from './myintset.schema'
 import { Clue, CreateClueInput } from './clue.schema'
 import { CreateMyinTSetInput } from './myintset.schema'
 import { Field, InputType, ObjectType, ID, Int, createUnionType } from 'type-graphql'
-
-export const cluePiecesFramesList = createUnionType({
-  name: 'CluePiecesFrames', // the name of the GraphQL union
-  types: () => [Piece, Frame] as const, // function that returns tuple of object types classes
-})
 
 @ObjectType({ description: 'The frame model' })
 @modelOptions({ options: { allowMixed: 0 } })
@@ -56,9 +51,9 @@ export class Frame {
   @prop({ required: true, nullable: true })
   settings: string
 
-  @Field(() => Int)
+  @Field(() => String)
   @prop({ required: true })
-  status: number
+  status: string
 
   @Field(() => Int)
   @prop({ required: true })
@@ -82,11 +77,11 @@ export class CreateFrameInput {
   @Field(() => String)
   owner: string
 
-  @Field(() => CreateChallengeInput)
-  challenge: CreateChallengeInput
+  @Field(() => CreateChallengeInput, { nullable: true })
+  challenge?: CreateChallengeInput
 
   @Field(() => [CreateClueInput])
-  clues: CreateClueInput[]
+  clues?: CreateClueInput[]
 
   @Field(() => [CreateTagInput])
   tags: CreateTagInput[]
@@ -100,14 +95,14 @@ export class CreateFrameInput {
   @Field(() => CreateMyinTSetInput, { nullable: true })
   myinTSet?: CreateMyinTSetInput
 
-  @Field(() => String, { nullable: true })
+  @Field(() => String)
   settings: string
 
   @Field(() => Boolean)
   updateWithOriginal: boolean
 
-  @Field(() => Int)
-  status: number
+  @Field(() => String)
+  status: string
 
   @Field(() => Int)
   version: number

@@ -18,7 +18,7 @@ export default class ThemeResolver {
   }
 
   @Query(() => [Theme])
-  themes() {
+  getThemes() {
     return this.themeService.findThemes()
   }
 

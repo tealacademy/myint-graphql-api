@@ -12,7 +12,7 @@ export class Theme {
 
   @Field(() => String)
   @prop({ required: false })
-  layout: string
+  layout?: string
 
   @prop({ required: false })
   deleted?: Date

@@ -6,7 +6,14 @@ export enum PIECE_EDGES {
 
 export enum FRAME_EDGES {
   FRAME_TAG = 'frame_tag',
+  FRAME_CLUE = 'frame_clue',
   FRAME_OWNER = 'frame_owner',
+  FRAME_MYINTSET = 'frame_myintset',
+  CLUE_IDEA = 'clue_idea',
+}
+
+export enum CHALLENGE_EDGES {
+  CHALLENGE_FRAME = 'challenge_frame',
 }
 
 export enum TAG_EDGES {

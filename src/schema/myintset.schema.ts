@@ -36,16 +36,16 @@ export const MyinTSetModel = getModelForClass<typeof MyinTSet>(MyinTSet, { schem
 
 @InputType({ description: 'The type used for creating a new frame' })
 export class CreateMyinTSetInput {
-  @Field(() => String) // Remove if field not publicly accessible?
-  owner: string // This is a reference to a user
+  @Field(() => String)
+  Id: string
 
-  @Field(() => [ListPieceInput]) // a myintset has 0..n pieces
+  @Field(() => [ListPieceInput], { nullable: true }) // a myintset has 0..n pieces
   pieces?: ListPieceInput[]
 
-  @Field(() => [ListFrameInput]) // a myintset has 0..n frames
+  @Field(() => [ListFrameInput], { nullable: true }) // a myintset has 0..n frames
   frames?: ListFrameInput[]
 
-  @Field(() => [ListTagInput]) // a myintset has 0..n frames
+  @Field(() => [ListTagInput], { nullable: true }) // a myintset has 0..n frames
   tags?: ListTagInput[]
 }
 

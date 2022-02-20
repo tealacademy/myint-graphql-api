@@ -38,13 +38,16 @@ export const ChallengeModel = getModelForClass<typeof Challenge>(Challenge, { sc
 
 @InputType({ description: 'The type used for creating a new frame' })
 export class CreateChallengeInput {
+  @Field(() => String, { defaultValue: '' })
+  Id: string
+
   @Field(() => String) // Remove if field not publicly accessible?
   owner: string // This is a reference to a user
 
   @Field(() => String)
   question: string
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   narrative?: string
 
   @Field(() => [ListFrameInput]) // a challenge has 0..n frames
