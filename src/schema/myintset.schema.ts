@@ -16,17 +16,17 @@ export class MyinTSet {
   @prop({ required: true, ref: () => User })
   owner: Ref<User> // This is a reference to a user
 
-  @Field(() => [Tag]) // a myintset has 0..n tags
-  @prop({ required: false })
-  tags?: Tag[]
+  @Field(() => [String], { nullable: true }) // a myintset has 0..n tags
+  @prop({ required: false, default: [], ref: () => String })
+  tags?: Ref<string>[]
 
-  @Field(() => [Piece]) // a myintset has 0..n frames
-  @prop({ required: false })
-  pieces?: Piece[]
+  @Field(() => [String], { nullable: true }) // a myintset has 0..n frames
+  @prop({ required: false, default: [], ref: () => String })
+  pieces?: Ref<string>[]
 
-  @Field(() => [Frame]) // a myintset has 0..n frames
-  @prop({ required: false })
-  frames?: Frame[]
+  @Field(() => [String], { nullable: true }) // a myintset has 0..n frames
+  @prop({ required: false, default: [], ref: () => String })
+  frames?: Ref<string>[]
 
   @prop({ required: false })
   deleted?: Date
@@ -34,10 +34,13 @@ export class MyinTSet {
 
 export const MyinTSetModel = getModelForClass<typeof MyinTSet>(MyinTSet, { schemaOptions: { timestamps: { createdAt: true } } })
 
-@InputType({ description: 'The type used for creating a new frame' })
+@InputType({ description: 'The type used for creating a new myintset' })
 export class CreateMyinTSetInput {
   @Field(() => String)
   Id: string
+
+  @Field(() => String) // Remove if field not publicly accessible?
+  owner: string // This is a reference to a user
 
   @Field(() => [ListPieceInput], { nullable: true }) // a myintset has 0..n pieces
   pieces?: ListPieceInput[]
@@ -49,7 +52,7 @@ export class CreateMyinTSetInput {
   tags?: ListTagInput[]
 }
 
-@InputType({ description: 'The type used for getting a frame' })
+@InputType({ description: 'The type used for getting a myintset' })
 export class GetMyinTSetInput {
   @Field()
   Id: string

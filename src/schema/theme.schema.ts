@@ -10,7 +10,7 @@ export class Theme {
   @prop({ required: true })
   name: string
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @prop({ required: false })
   layout?: string
 
@@ -25,8 +25,8 @@ export class CreateThemeInput implements Partial<Theme> {
   @Field(() => String)
   name: string
 
-  @Field(() => String)
-  layout: string
+  @Field(() => String, { nullable: true })
+  layout?: string
 }
 
 @InputType({ description: 'The type used for getting a theme' })

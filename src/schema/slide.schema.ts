@@ -8,11 +8,11 @@ export class Slide {
   @Field((type) => ID)
   _id: string
 
-  @Field(() => [SlideObject])
+  @Field(() => [SlideObject], { nullable: true })
   @prop({ required: false })
   slideObjects?: SlideObject[]
 
-  @Field(() => Boolean)
+  @Field(() => Boolean, { nullable: true })
   @prop({ required: false, default: true })
   show?: boolean
 
@@ -39,15 +39,15 @@ class SlideObject {
   @prop({ required: true })
   kindType: string
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @prop({ required: false })
   data?: string
 
-  @Field(() => Int)
+  @Field(() => Int, { nullable: true })
   @prop({ required: false })
   xPos?: number
 
-  @Field(() => Int)
+  @Field(() => Int, { nullable: true })
   @prop({ required: false })
   yPos?: number
 
@@ -63,7 +63,7 @@ export class CreateSlideInput {
   @Field()
   Id: string
 
-  @Field(() => [ListSlideObjectInput])
+  @Field(() => [ListSlideObjectInput], { nullable: true })
   slideObjects?: ListSlideObjectInput[]
 
   @Field(() => Boolean)

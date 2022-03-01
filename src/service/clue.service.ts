@@ -1,16 +1,20 @@
 import { GetClueInput, ClueModel, CreateClueInput, IdeaModel, CreateIdeaInput } from '../schema/clue.schema'
 import EdgeService from '../service/edge.service'
+import TagService from './tag.service'
 import { User } from '../schema/user.schema'
 import { FRAME_EDGES } from '../types/message.label'
 
 class ClueService {
   async createClue(input: CreateClueInput) {
-    // create ides
+    // check tag
+    // if (input.tag)  {const newTags = await new TagService().handleTagList([input.tag], input.owner)}
+
+    // create ideas
     const newIdeas = input.ideas
       ? input.ideas.map((idea) => {
           return this.createIdea(idea)
         })
-      : undefined
+      : undefined // ! does this work?
 
     const clue = await ClueModel.create({ ...input, ideas: newIdeas })
 

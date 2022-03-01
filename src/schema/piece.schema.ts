@@ -25,7 +25,7 @@ export class Piece {
   @prop({ required: true })
   title: string
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @prop({ required: false })
   deepMyinT?: string
 
@@ -37,7 +37,7 @@ export class Piece {
   @prop({ required: true })
   slides: Slide[]
 
-  @Field(() => Theme)
+  @Field(() => Theme, { nullable: true })
   @prop({ required: false, ref: () => Theme })
   theme?: Ref<Theme>
 
@@ -45,7 +45,7 @@ export class Piece {
   @prop({ required: true })
   version: number
 
-  @Field(() => Boolean)
+  @Field(() => Boolean, { nullable: true })
   @prop({ required: false, defaultValue: false })
   autoPlay?: boolean
 

@@ -2,7 +2,7 @@ import { getModelForClass, modelOptions, prop, Ref } from '@typegoose/typegoose'
 import { Tag, CreateTagInput } from './tag.schema'
 import { Piece } from './piece.schema'
 import { User } from './user.schema'
-import { Challenge, CreateChallengeInput } from './challenge.schema'
+import { Challenge, ListChallengeInput } from './challenge.schema'
 import { MyinTSet } from './myintset.schema'
 import { Clue, CreateClueInput } from './clue.schema'
 import { CreateMyinTSetInput } from './myintset.schema'
@@ -22,11 +22,11 @@ export class Frame {
   @prop({ required: true })
   title: string
 
-  @Field(() => Challenge) // A frame has 0 or 1 challenge
-  @prop({ required: false })
-  challenge?: Challenge
+  @Field(() => Challenge, { nullable: true }) // A frame has 0 or 1 challenge
+  @prop({ required: false, ref: () => Challenge })
+  challenge?: Ref<Challenge>
 
-  @Field(() => [Clue])
+  @Field(() => [Clue], { nullable: true })
   @prop({ required: false })
   clues?: Clue[]
 
@@ -35,7 +35,7 @@ export class Frame {
   @prop({ required: true })
   tags: Tag[]
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @prop({ required: false })
   conclusion?: string
 
@@ -43,7 +43,7 @@ export class Frame {
   @prop({ required: true, default: false })
   starred: boolean
 
-  @Field(() => MyinTSet) // A frame has 0 or 1 challenge
+  @Field(() => MyinTSet, { nullable: true }) // A frame has 0 or 1 challenge
   @prop({ required: false })
   myinTSet?: MyinTSet
 
@@ -77,8 +77,8 @@ export class CreateFrameInput {
   @Field(() => String)
   owner: string
 
-  @Field(() => CreateChallengeInput, { nullable: true })
-  challenge?: CreateChallengeInput
+  @Field(() => ListChallengeInput, { nullable: true })
+  challenge?: ListChallengeInput
 
   @Field(() => [CreateClueInput])
   clues?: CreateClueInput[]

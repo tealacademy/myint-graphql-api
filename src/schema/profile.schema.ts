@@ -15,23 +15,23 @@ export class Profile {
   @prop({ required: true })
   firstName: string
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @prop({ required: false })
   lastName?: string
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @prop({ required: false })
   address?: string
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @prop({ required: false })
   houseNumber?: string
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @prop({ required: false })
   zipCode?: string
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @prop({ required: false })
   city?: string
 

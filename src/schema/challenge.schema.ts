@@ -14,15 +14,15 @@ export class Challenge {
   @prop({ required: true, ref: () => User })
   owner: Ref<User> // This is a reference to a user
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @prop({ required: false })
-  name: string
+  name?: string
 
   @Field(() => String)
   @prop({ required: true })
   question: string
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @prop({ required: false })
   narrative?: string
 
@@ -54,7 +54,12 @@ export class CreateChallengeInput {
   frames: ListFrameInput[]
 }
 
-@InputType({ description: 'The type used for getting a frame' })
+@InputType({ description: 'The type used for adding a challenge' })
+export class ListChallengeInput {
+  @Field()
+  Id: string
+}
+@InputType({ description: 'The type used for getting a challenge' })
 export class GetChallengeInput {
   @Field()
   Id: string

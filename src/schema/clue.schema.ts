@@ -3,7 +3,8 @@ import { Tag, CreateTagInput } from './tag.schema'
 import { Piece, ListPieceInput } from './piece.schema'
 import { Frame, ListFrameInput } from './frame.schema'
 import { User } from './user.schema'
-import { Field, InputType, ObjectType, ID, Int, createUnionType } from 'type-graphql'
+import { Field, InputType, ObjectType, ID, Int, createUnionType, Directive } from 'type-graphql'
+import { IsOptional } from 'class-validator'
 
 // export const cluePiecesFramesList = createUnionType({
 //   name: 'CluePiecesFrames', // the name of the GraphQL union
@@ -20,7 +21,7 @@ export class Clue {
   @prop({ required: true })
   question: string
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @prop({ required: false })
   solution?: string
 
@@ -28,15 +29,15 @@ export class Clue {
   // @prop({ required: false })
   // piecesFramesList?: typeof cluePiecesFramesList[]
 
-  @Field(() => [ListPieceFrame])
+  @Field(() => [ObjReferenceList], { nullable: true })
   @prop({ required: false })
-  piecesFramesList?: ListPieceFrame[]
+  objReferencesList?: ObjReferenceList[]
 
-  @Field(() => Tag)
-  @prop({ required: false })
+  @Field(() => Tag, { nullable: true })
+  @prop({ required: false, defaultValue: null })
   tag?: Tag
 
-  @Field(() => [Idea])
+  @Field(() => [Idea], { nullable: true })
   @prop({ required: false })
   ideas?: Idea[]
 
@@ -59,9 +60,9 @@ export class Clue {
  *  We store this list as a list of Ref's to an Id
  *  and 'type' determines if it is a Piece or a Frame
  */
-@ObjectType({ description: 'The piueces/frames-object model' })
+@ObjectType({ description: 'The objectReferences model (in general references to pieces or frames)' })
 @modelOptions({ options: { allowMixed: 0 } })
-export class ListPieceFrame {
+export class ObjReferenceList {
   @Field(() => String)
   @prop({ required: true })
   type: string
@@ -93,9 +94,9 @@ class Idea {
   // @prop({ required: false })
   // piecesFramesList?: typeof cluePiecesFramesList[]
 
-  @Field(() => [ListPieceFrame])
+  @Field(() => [ObjReferenceList])
   @prop({ required: false })
-  piecesFramesList?: ListPieceFrame[]
+  objReferencesList?: ObjReferenceList[]
 }
 
 export const ClueModel = getModelForClass<typeof Clue>(Clue, { schemaOptions: { timestamps: { createdAt: true } } })
@@ -113,8 +114,8 @@ export class CreateClueInput {
   solution?: string
 
   // https://typegraphql.com/docs/unions.html
-  @Field(() => [ListPieceFrameInput], { nullable: true })
-  piecesFramesList?: ListPieceFrameInput[]
+  @Field(() => [ObjReferenceListInput], { nullable: true })
+  objReferencesList?: ObjReferenceListInput[]
 
   @Field(() => CreateTagInput, { nullable: true })
   tag?: CreateTagInput
@@ -140,12 +141,12 @@ export class CreateIdeaInput {
   @Field(() => String)
   description: string
 
-  @Field(() => [ListPieceFrameInput], { nullable: true })
-  piecesFramesList?: ListPieceFrameInput[]
+  @Field(() => [ObjReferenceListInput], { nullable: true })
+  objReferencesList?: ObjReferenceListInput[]
 }
 
 @InputType({ description: 'The type to input a piece or a frame' })
-export class ListPieceFrameInput {
+export class ObjReferenceListInput {
   @Field(() => String)
   type: string
 

@@ -1,8 +1,8 @@
 import { CreateMyinTSetInput, GetMyinTSetInput, MyinTSetModel } from '../schema/myintset.schema'
-import { EdgeModel } from '../schema/edge.schema'
 
 class MyinTSetService {
   async createMyinTSet(input: CreateMyinTSetInput) {
+    console.log('Create myinTSet')
     return MyinTSetModel.create(input)
   }
 

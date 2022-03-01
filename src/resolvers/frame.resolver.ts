@@ -13,14 +13,16 @@ export default class FrameResolver {
   @Mutation(() => Frame)
   createFrame(@Arg('input') input: CreateFrameInput, @Ctx() context: Context) {
     const user = context.user!
+
     return this.frameService.createFrame({ ...input, owner: user._id })
   }
 
-  @Authorized()
+  // @Authorized()
   @Query(() => [Frame])
   getFrames(@Ctx() context: Context) {
     const user = context.user!
-    return this.frameService.findUserFrames(user._id)
+    const userId = '61e1871699df55f4e68933d7'
+    return this.frameService.findUserFrames(userId) //user._id)
   }
 
   @Authorized()
