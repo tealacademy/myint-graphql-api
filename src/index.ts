@@ -12,7 +12,7 @@ import { connectToDatabase } from './utils/database'
 import { verifyJwt } from './utils/jwt'
 import jwt from 'jsonwebtoken'
 import { User } from './schema/user.schema'
-import UserService from './service/user.service'
+// import UserService from './service/user.service'
 import Context from './types/context'
 import authChecker from './utils/authChecker'
 
@@ -32,12 +32,6 @@ async function bootstrap() {
   // Init express
   const app = express()
 
-  app.get('/confirmation/:token', async (req, res) => {
-    await new UserService().confirmUser(req.params.token)
-
-    return res.redirect(config.get('clientDomain'))
-  })
-
   // Parse Cookie header and populate req.cookies with an object keyed by the cookie names.
   app.use(cookieParser())
 
@@ -53,7 +47,6 @@ async function bootstrap() {
         const token = authHeader.split(' ')[1]
 
         if (token) {
-          // console.log('verifyJWT')
           const user = verifyJwt<User>(token)
 
           context.user = user // When user in context, @Authorised will validate in resolver

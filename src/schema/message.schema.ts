@@ -3,9 +3,9 @@ import { Field, InputType, ObjectType, ID, Int } from 'type-graphql'
 import { User } from './user.schema'
 import Context from '../types/context'
 
-@ObjectType({ description: 'The tag model' })
+@ObjectType({ description: 'The message model' })
 @modelOptions({ options: { allowMixed: 0 } })
-export class Tag {
+export class Message {
   @Field((type) => ID)
   _id: string
 
@@ -21,10 +21,10 @@ export class Tag {
   deleted?: Date
 }
 
-export const TagModel = getModelForClass<typeof Tag>(Tag, { schemaOptions: { timestamps: { createdAt: true } } })
+export const MessageModel = getModelForClass<typeof Message>(Message, { schemaOptions: { timestamps: { createdAt: true } } })
 
-@InputType({ description: 'The type used for creating a new tag' })
-export class CreateTagInput implements Partial<Tag> {
+@InputType({ description: 'The type used for creating a new message' })
+export class CreateMessageInput implements Partial<Message> {
   @Field(() => String, { defaultValue: '' })
   Id: string
 
@@ -35,14 +35,14 @@ export class CreateTagInput implements Partial<Tag> {
   owner: string
 }
 
-@InputType({ description: 'The type used for creating a new tag' })
-export class ListTagInput {
+@InputType({ description: 'The type used for creating a new message' })
+export class ListMessageInput {
   @Field(() => String)
   Id: string
 }
 
-@InputType({ description: 'The type used for getting a tag' })
-export class GetTagInput {
+@InputType({ description: 'The type used for getting a message' })
+export class GetMessageInput {
   @Field(() => String)
   Id: string
 }

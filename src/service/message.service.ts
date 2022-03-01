@@ -1,50 +1,42 @@
-import { CreateTagInput, GetTagInput, ListTagInput, TagModel, Tag } from '../schema/tag.schema'
+import { CreateMessageInput, GetMessageInput, ListMessageInput, MessageModel, Message } from '../schema/message.schema'
 import { User } from '../schema/user.schema'
-import EdgeService from '../service/edge.service'
-import { TAG_EDGES } from '../types/message.label'
 
-class TagService {
-  async createTag(input: CreateTagInput & { owner: User['_id'] }) {
-    // Create the tag and link it to the current user
+class MessageService {
+  async createMessage(input: CreateMessageInput & { owner: User['_id'] }) {
+    // Create the message and link it to the current user
 
-    // Allways uppercase
-    input.title = input.title.toUpperCase()
-    const newTag = await TagModel.create(input)
+    const newMessage = await MessageModel.create(input)
 
-    // Create an edge with the user/owner of the tag
-    const edgeService = new EdgeService()
-    const edge = edgeService.createEdge({ ...input, nodeA: input.owner, nodeB: newTag._id, label: TAG_EDGES.USER_TAG })
-
-    return newTag
+    return newMessage
   }
 
-  async findUserTags(userId: string) {
-    const tags = await TagModel.find({ owner: userId }).lean()
+  async findUserMessages(userId: string) {
+    const messages = await MessageModel.find({ owner: userId }).lean()
 
-    // console.log('tags', tags)
-    return tags
+    // console.log('messages', messages)
+    return messages
   }
 
-  async findSingleTag(input: GetTagInput & { owner: User['_id'] }) {
+  async findSingleMessage(input: GetMessageInput & { owner: User['_id'] }) {
     // must be of owner, other searchfields optional
-    return TagModel.findOne({ ...input }).lean()
+    return MessageModel.findOne({ ...input }).lean()
   }
 
-  /** Creates tags that do not exist yet and adjusts the input */
-  async handleTagList(inputTags: CreateTagInput[], owner: User['_id']) {
-    console.log('handleTagList', inputTags)
+  /** Creates messages that do not exist yet and adjusts the input */
+  async handleMessageList(inputMessages: CreateMessageInput[], owner: User['_id']) {
+    console.log('handleMessageList', inputMessages)
 
-    const newTags = []
-    for (const tag of inputTags) {
-      // If no ID, we need to create tag
-      const existingTag = await this.findSingleTag({ Id: tag.Id, owner: owner })
+    const newMessages = []
+    for (const message of inputMessages) {
+      // If no ID, we need to create message
+      const existingMessage = await this.findSingleMessage({ Id: message.Id, owner: owner })
 
-      const newTag = tag.Id === '' || !existingTag ? await this.createTag({ ...tag, owner: owner }) : existingTag
+      const newMessage = message.Id === '' || !existingMessage ? await this.createMessage({ ...message, owner: owner }) : existingMessage
 
-      newTags.push(newTag)
+      newMessages.push(newMessage)
     }
-    return newTags
+    return newMessages
   }
 }
 
-export default TagService
+export default MessageService
