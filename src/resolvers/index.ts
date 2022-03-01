@@ -1,4 +1,3 @@
-import UserResolver from "./user.resolver";
-import PieceResolver from "./piece.resolver";
+import MessageResolver from './message.resolver'
 
-export const resolvers = [UserResolver, PieceResolver] as const;
+export const resolvers = [MessageResolver] as const

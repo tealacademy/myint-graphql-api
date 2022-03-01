@@ -7,5 +7,7 @@
   "useTabs": false,
   "bracketSpacing": true,
   "jsxBracketSameLine": true,
-  "arrowParens": "always"
+  "arrowParens": "always",
+  "proseWrap": "never",
+  "printWidth": 160
 }
