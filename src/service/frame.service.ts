@@ -7,7 +7,7 @@ import MyinTSetService from './myintset.service'
 import ClueService from './clue.service'
 import EdgeService from './edge.service'
 import { User } from '../schema/user.schema'
-import { FRAME_EDGES, CHALLENGE_EDGES } from '../types/message.label'
+import { FRAME_EDGES, CHALLENGE_EDGES } from '../types/enums'
 
 class FrameService {
   /** Create complete document with filled 1:n relations for tags, clues
@@ -27,16 +27,16 @@ class FrameService {
     //   : undefined
     // console.log('new challenge', newChallenge)
 
-    console.log('input myintset', input.myinTSet)
-    const newMyinTSet = input.myinTSet
-      ? input.myinTSet.Id === ''
-        ? await new MyinTSetService().createMyinTSet(input.myinTSet)
-        : await new MyinTSetService().findSingleMyinTSet({ Id: input.myinTSet.Id })
-      : undefined
+    // console.log('input myintset', input.myinTSet)
+    // const newMyinTSet = input.myinTSet
+    //   ? input.myinTSet.Id === ''
+    //     ? await new MyinTSetService().createMyinTSet(input.myinTSet)
+    //     : await new MyinTSetService().findSingleMyinTSet({ Id: input.myinTSet.Id })
+    //   : undefined
 
-    console.log('new myinTSet', newMyinTSet)
+    // console.log('new myinTSet', newMyinTSet)
 
-    let frame = await FrameModel.create({ ...input, tags: newTags, clues: newClues, myintset: newMyinTSet })
+    let frame = await FrameModel.create({ ...input, tags: newTags, clues: newClues })
 
     // put new frame in challenge
     // if (newChallenge) {
@@ -54,9 +54,9 @@ class FrameService {
     if (input.challenge) {
       const edgeChallenge = edgeService.createEdge({ ...input, nodeA: input.challenge.Id, nodeB: frame._id, label: CHALLENGE_EDGES.CHALLENGE_FRAME })
     }
-    if (newMyinTSet) {
-      const edgeChallenge = edgeService.createEdge({ ...input, nodeA: frame._id, nodeB: newMyinTSet._id, label: FRAME_EDGES.FRAME_MYINTSET })
-    }
+    // if (newMyinTSet) {
+    //   const edgeChallenge = edgeService.createEdge({ ...input, nodeA: frame._id, nodeB: newMyinTSet._id, label: FRAME_EDGES.FRAME_MYINTSET })
+    // }
 
     for (const tag of newTags) {
       const edge = edgeService.createEdge({ ...input, nodeA: frame._id, nodeB: tag._id, label: FRAME_EDGES.FRAME_TAG })
@@ -78,7 +78,7 @@ class FrameService {
 
   async findUserFrames(userId: string) {
     const frames = await FrameModel.find({ owner: userId }).lean()
-    console.log('frames', frames)
+
     return frames
   }
 

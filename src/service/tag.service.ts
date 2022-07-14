@@ -1,7 +1,7 @@
 import { CreateTagInput, GetTagInput, ListTagInput, TagModel, Tag } from '../schema/tag.schema'
 import { User } from '../schema/user.schema'
 import EdgeService from '../service/edge.service'
-import { TAG_EDGES } from '../types/message.label'
+import { TAG_EDGES } from '../types/enums'
 
 class TagService {
   async createTag(input: CreateTagInput & { owner: User['_id'] }) {

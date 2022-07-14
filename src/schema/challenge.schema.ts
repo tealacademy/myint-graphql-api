@@ -1,7 +1,8 @@
 import { getModelForClass, modelOptions, index, Prop, prop, Ref } from '@typegoose/typegoose'
-import { Tag } from './tag.schema'
+import { Tag, CreateTagInput } from './tag.schema'
 import { Frame, ListFrameInput } from './frame.schema'
 import { User } from './user.schema'
+import { MyinTSet, CreateMyinTSetInput } from './myintset.schema'
 import { Field, InputType, ObjectType, ID, Int, createUnionType } from 'type-graphql'
 
 @ObjectType({ description: 'The challenge-object model' })
@@ -26,6 +27,15 @@ export class Challenge {
   @prop({ required: false })
   narrative?: string
 
+  // The tags associated with this challenge.
+  @Field(() => [Tag])
+  @prop({ required: true })
+  tags: Tag[]
+
+  @Field(() => MyinTSet, { nullable: true }) // A frame has 0 or 1 challenge
+  @prop({ required: false })
+  myinTSet?: MyinTSet
+
   @Field(() => [String]) // a challenge has 0..n frames
   @prop({ required: true, default: [], ref: () => String })
   frames: Ref<string>[]
@@ -49,6 +59,12 @@ export class CreateChallengeInput {
 
   @Field(() => String, { nullable: true })
   narrative?: string
+
+  @Field(() => [CreateTagInput])
+  tags: CreateTagInput[]
+
+  @Field(() => CreateMyinTSetInput, { nullable: true })
+  myinTSet?: CreateMyinTSetInput
 
   @Field(() => [ListFrameInput]) // a challenge has 0..n frames
   frames: ListFrameInput[]

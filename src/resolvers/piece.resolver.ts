@@ -5,6 +5,7 @@ import Context from '../types/context'
 
 @Resolver()
 export default class PieceResolver {
+  // Dependency Injection?
   constructor(private pieceService: PieceService) {
     this.pieceService = new PieceService()
   }

@@ -3,7 +3,7 @@ import TagService from '../service/tag.service'
 import SlideService from '../service/slide.service'
 import EdgeService from '../service/edge.service'
 import { User } from '../schema/user.schema'
-import { PIECE_EDGES } from '../types/message.label'
+import { PIECE_EDGES } from '../types/enums'
 
 class PieceService {
   /** Create complete document with filled 1:n relations for tags, slides

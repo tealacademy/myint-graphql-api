@@ -25,6 +25,7 @@ export default class UserResolver {
   @Authorized()
   @Query(() => User, { nullable: true }) // currently logged in user
   me(@Ctx() context: Context) {
+    console.log(context.user)
     return context.user // https://www.youtube.com/watch?v=PXwnT25SZro does this differently
   }
 

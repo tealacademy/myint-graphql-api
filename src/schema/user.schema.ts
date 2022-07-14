@@ -42,12 +42,16 @@ export class User {
   passWord: string
 
   @Field(() => Profile)
-  @prop({ required: true })
-  profile: Profile
+  @prop({ required: false })
+  profile?: Profile
 
   @Field(() => String)
   @prop({ required: true })
   confirmToken: string
+
+  @Field(() => String)
+  @prop({ required: true, nullable: true })
+  settings: string
 
   @Field(() => [Number])
   @prop({ required: true, default: [] })
@@ -81,8 +85,11 @@ export class CreateUserInput {
   @Field(() => String)
   passWord: string
 
-  @Field(() => CreateProfileInput)
-  profile: CreateProfileInput
+  @Field(() => String, { nullable: true }) // When no settings, user gets defaultSettings in frontend
+  settings?: string
+
+  @Field(() => CreateProfileInput, { nullable: true })
+  profile?: CreateProfileInput
 }
 
 @InputType()

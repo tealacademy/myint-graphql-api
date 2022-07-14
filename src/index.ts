@@ -86,7 +86,7 @@ async function bootstrap() {
   // app.listen on express server
   // TODO: portnumber to variables
   app.listen({ port: config.get('serverPort') }, () => {
-    console.log(`App is listening on http://localhost:${config.get('serverPort')}`)
+    console.log(`MyinT-graphQL-API is listening on http://localhost:${config.get('serverPort')}`)
   })
   connectToDatabase()
 }

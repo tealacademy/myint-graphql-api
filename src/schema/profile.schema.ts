@@ -35,10 +35,6 @@ export class Profile {
   @prop({ required: false })
   city?: string
 
-  @Field(() => String)
-  @prop({ required: true, nullable: true })
-  settings: string
-
   @prop({ required: false })
   deleted?: Date
 
@@ -68,9 +64,6 @@ export class CreateProfileInput {
 
   @Field(() => String, { nullable: true })
   city?: string
-
-  @Field(() => String, { nullable: true }) // When no settings, user gets defaultSettings in frontend
-  settings: string
 }
 
 @InputType({ description: 'The type used for getting a profile' })

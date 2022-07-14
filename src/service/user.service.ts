@@ -1,5 +1,3 @@
-import dotenv from 'dotenv'
-dotenv.config()
 import { omit, pick } from 'lodash'
 import { ApolloError } from 'apollo-server-errors'
 import bcrypt from 'bcrypt'
@@ -13,8 +11,8 @@ import jwt from 'jsonwebtoken'
 import config from 'config'
 import nodemailer from 'nodemailer'
 import LogService from './log.service'
-import { LOG_EDGES, USER_EDGES, LOG_ACTIONS, ERROR_MESSAGES } from '../types/message.label'
-const EMAIL_SECRET = 'asdf1093KMnzxcvnkljvasdu09123nlasdasdf'
+import { LOG_EDGES, USER_EDGES, LOG_ACTIONS, ERROR_MESSAGES } from '../types/enums'
+// const EMAIL_SECRET = 'asdf1093KMnzxcvnkljvasdu09123nlasdasdf'
 
 class UserService {
   async createUser(input: CreateUserInput) {
@@ -22,15 +20,15 @@ class UserService {
 
     // creating a new profile (for now)
     // later it must be possible to create a new user based on an existing profile.
-    const newProfile = await new ProfileService().createProfile({ ...input.profile })
-    console.log(newProfile)
+    // const newProfile = await new ProfileService().createProfile({ ...input.profile })
+    // console.log(newProfile)
 
     // Create user with encrypted password
     const confirmToken = nanoid(32)
-    const newUser = await UserModel.create({ ...input, profile: newProfile, confirmToken })
+    const newUser = await UserModel.create({ ...input, confirmToken })
     console.log(newUser)
 
-    const createEdge = new EdgeService().createEdge({ nodeA: newUser._id, nodeB: newProfile.id, label: USER_EDGES.USER_PROFILE })
+    // const createEdge = new EdgeService().createEdge({ nodeA: newUser._id, nodeB: newProfile.id, label: USER_EDGES.USER_PROFILE })
 
     const dataString = JSON.stringify(`{confirmToken: ${confirmToken}`)
     const newLog = new LogService().createLog({ action: LOG_ACTIONS.CREATE_USER, data: dataString }, newUser, LOG_EDGES.USER_LOG_ITEM)
@@ -48,7 +46,7 @@ class UserService {
         user: result.id,
         confirmToken: result.confirmToken,
       },
-      EMAIL_SECRET, // SECRET-KEY to encrypt
+      process.env.EMAIL_SECRET ? process.env.EMAIL_SECRET : '', // SECRET-KEY to encrypt
       {
         expiresIn: '1d',
       },
@@ -63,13 +61,13 @@ class UserService {
         })
         transporter.sendMail({
           from: `MyinT <${process.env.EMAIL_USER}>`,
-          to: `${result.profile.firstName} <${result.eMail}>`,
+          to: `New MyinT user <${result.eMail}>`,
           subject: 'Activate your MyinT',
           html: `Please click this link to activate your MyinT: <a href="${url}">${url}</a>`,
         })
       }
     )
-    const dataString = JSON.stringify(`{to: ${result.profile.firstName} <${result.eMail}>`)
+    const dataString = JSON.stringify(`{to: New MyinT user <${result.eMail}>`)
     const newLog = new LogService().createLog({ action: LOG_ACTIONS.REGISTER_USER, data: dataString }, result, LOG_EDGES.USER_LOG_ITEM)
 
     return result
@@ -78,7 +76,7 @@ class UserService {
   async confirmUser(token: string) {
     try {
       type userId = { id: string; confirmToken: string; iat: number; exp: number }
-      const userid = jwt.verify(token, EMAIL_SECRET) as userId
+      const userid = jwt.verify(token, process.env.EMAIL_SECRET ? process.env.EMAIL_SECRET : '') as userId
 
       // find our user
       const user = await UserModel.findOne(userid)
@@ -137,6 +135,10 @@ class UserService {
       const newLog = new LogService().createLog({ action: LOG_ACTIONS.LOGOUT_USER, data: '' }, context.user, LOG_EDGES.USER_LOG_ITEM)
     }
     return null
+  }
+
+  async userInGroup(userId: String, groupId: String) {
+    return true
   }
 }
 

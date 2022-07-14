@@ -1,11 +1,8 @@
 import { getModelForClass, modelOptions, prop, Ref } from '@typegoose/typegoose'
 import { Tag, CreateTagInput } from './tag.schema'
-import { Piece } from './piece.schema'
 import { User } from './user.schema'
 import { Challenge, ListChallengeInput } from './challenge.schema'
-import { MyinTSet } from './myintset.schema'
 import { Clue, CreateClueInput } from './clue.schema'
-import { CreateMyinTSetInput } from './myintset.schema'
 import { Field, InputType, ObjectType, ID, Int, createUnionType } from 'type-graphql'
 
 @ObjectType({ description: 'The frame model' })
@@ -42,10 +39,6 @@ export class Frame {
   @Field(() => Boolean)
   @prop({ required: true, default: false })
   starred: boolean
-
-  @Field(() => MyinTSet, { nullable: true }) // A frame has 0 or 1 challenge
-  @prop({ required: false })
-  myinTSet?: MyinTSet
 
   @Field(() => String)
   @prop({ required: true, nullable: true })
@@ -91,9 +84,6 @@ export class CreateFrameInput {
 
   @Field(() => Boolean, { defaultValue: false })
   starred: boolean
-
-  @Field(() => CreateMyinTSetInput, { nullable: true })
-  myinTSet?: CreateMyinTSetInput
 
   @Field(() => String)
   settings: string

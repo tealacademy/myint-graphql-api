@@ -1,7 +1,7 @@
 import { CreateLogInput, LogModel } from '../schema/log.schema'
 import EdgeService from '../service/edge.service'
 import { User } from '../schema/user.schema'
-import { LOG_EDGES } from '../types/message.label'
+import { LOG_EDGES } from '../types/enums'
 
 class LogService {
   async createLog(input: CreateLogInput, user: User, label: string) {
