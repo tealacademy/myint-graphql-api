@@ -1,52 +1,38 @@
-import { getModelForClass, prop, Ref } from '@typegoose/typegoose'
-import { Field, InputType, ObjectType, ID } from 'type-graphql'
+import { prop, Ref } from '@typegoose/typegoose'
+import { Field, ObjectType, ID } from 'type-graphql'
+import { User } from './user.schema'
+import { Changeset } from './../utils/json-diff-ts/jsonDiff'
 
-@ObjectType({ description: 'The edge model' })
+/**
+ * Relations in our database are made with edges between nodes.
+ */
+@ObjectType({ description: 'The basic edge model' })
 export class Edge {
   @Field((type) => ID)
   _id: string
 
   @Field(() => String)
-  @prop({ required: true, ref: () => String })
-  nodeA: Ref<string>
-
-  @Field(() => String)
-  @prop({ required: true, ref: () => String })
-  nodeB: Ref<string>
-
-  @Field(() => String)
   @prop({ required: true })
   label: string
+
+  @Field(() => User)
+  @prop({ required: true, ref: () => User })
+  owner: Ref<User> // added the edge
 
   @prop({ required: false })
   deleted?: Date
 }
 
-export const EdgeModel = getModelForClass<typeof Edge>(Edge, { schemaOptions: { timestamps: { createdAt: true } } })
+@ObjectType({ description: 'The edge for changes on an object' })
+export class VersionEdge extends Edge {
+  // delta of the change
+  @Field(() => String)
+  @prop({ required: false })
+  delta?: Changeset
 
-@InputType({ description: 'The type used for creating a new edge' })
-export class CreateEdgeInput {
-  @Field()
-  nodeA: string
-
-  @Field()
-  nodeB: string
-
-  @Field()
-  label: string
+  @Field(() => Number)
+  @prop({ required: true })
+  version: number
 }
 
-@InputType({ description: 'The type used for getting an edge' })
-export class GetEdgeInput {
-  @Field({ nullable: true })
-  Id?: string
-
-  @Field({ nullable: true })
-  nodeA?: string
-
-  @Field({ nullable: true })
-  nodeB?: string
-
-  @Field({ nullable: true })
-  label?: string
-}
+// export const EdgeModel = getModelForClass<typeof Edge>(Edge, { schemaOptions: { timestamps: { createdAt: true } } })

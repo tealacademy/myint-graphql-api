@@ -3,7 +3,7 @@ import { Arg, Args, Root, Authorized, Ctx, Mutation, Query, Resolver, Subscripti
 import { CreateMessageInput, Message, IMessage } from '../schema/message.schema'
 import MessageService from '../service/message.service'
 import Context from '../types/context'
-import { SUBSCRIPTIONS } from './../types/enums'
+import { SUBSCRIPTIONS } from '../types/data'
 
 @Resolver()
 export default class MessageResolver {

@@ -1,9 +1,10 @@
 import { getModelForClass, modelOptions, index, Prop, prop, Ref } from '@typegoose/typegoose'
 import { Tag, CreateTagInput } from './tag.schema'
 import { Frame, ListFrameInput } from './frame.schema'
+import { Edge, VersionEdge } from './edge.schema'
 import { User } from './user.schema'
 import { MyinTSet, CreateMyinTSetInput } from './myintset.schema'
-import { Field, InputType, ObjectType, ID, Int, createUnionType } from 'type-graphql'
+import { Field, InputType, ObjectType, ID } from 'type-graphql'
 
 @ObjectType({ description: 'The challenge-object model' })
 @modelOptions({ options: { allowMixed: 0 } })
@@ -11,9 +12,11 @@ export class Challenge {
   @Field((type) => ID)
   _id: string
 
-  @Field(() => User) // Remove if field not publicly accessible?
+  // This is a reference to a user. No need for whole User-object because not visible in UI.
+  // No need for edge because owner is set at creation and will not change.
+  @Field(() => User)
   @prop({ required: true, ref: () => User })
-  owner: Ref<User> // This is a reference to a user
+  owner: Ref<User>
 
   @Field(() => String, { nullable: true })
   @prop({ required: false })
@@ -27,24 +30,78 @@ export class Challenge {
   @prop({ required: false })
   narrative?: string
 
-  // The tags associated with this challenge.
-  @Field(() => [Tag])
-  @prop({ required: true })
+  // The tags associated with this challenge. No ref because of performance: necessary in UI
+  // No edge because creation of relation not important
+  @Field(() => [Tag]) // a challenge has 0..n tags
+  @prop({ required: true, default: [] })
   tags: Tag[]
 
-  @Field(() => MyinTSet, { nullable: true }) // A frame has 0 or 1 challenge
-  @prop({ required: false })
-  myinTSet?: MyinTSet
+  // Also edge because you can change myinTSet. When changed a new MyinTSet should be created
+  // Actual MyinTset stored here for performance
+  @Field(() => MyinTSet, { nullable: true }) // When there is no specific MyinTSet, the Challenge is using the whole MyinT
+  @prop({ required: false, ref: () => MyinTSet })
+  myinTSet?: Ref<MyinTSet>
 
-  @Field(() => [String]) // a challenge has 0..n frames
-  @prop({ required: true, default: [], ref: () => String })
-  frames: Ref<string>[]
+  // Also edges
+  // Actual Frames also stored here for performance
+  @Field(() => [Frame]) // a challenge has 0..n frames
+  @prop({ required: true, default: [], ref: () => Frame })
+  frames: Ref<Frame>[]
+
+  @Field(() => String)
+  settings: string
 
   @prop({ required: false })
   deleted?: Date
 }
 
+@ObjectType({ description: 'The edge between challenge and frames' })
+export class ChallengeFrameEdge extends Edge {
+  @Field(() => Challenge)
+  @prop({ required: true, ref: () => Challenge })
+  challenge: Ref<Challenge>
+
+  @Field(() => Frame)
+  @prop({ required: true, ref: () => Frame })
+  frame: Ref<Frame>
+
+  @Field(() => Number)
+  @prop({ required: true })
+  order: number
+}
+
+@ObjectType({ description: 'The edge between challenge and frames' })
+export class ChallengeMyinTSetEdge extends Edge {
+  @Field(() => Challenge)
+  @prop({ required: true, ref: () => Challenge })
+  challenge: Ref<Challenge>
+
+  @Field(() => MyinTSet)
+  @prop({ required: true, ref: () => MyinTSet })
+  frame: Ref<Frame>
+}
+
+@ObjectType({ description: 'The edge for changes on a challenge' })
+export class ChallengeVersionEdge extends VersionEdge {
+  // Original challenge
+  @Field(() => Challenge)
+  @prop({ required: true, ref: () => Challenge })
+  challengeOld: Ref<Challenge>
+
+  // Copy or original challenge
+  @Field(() => Challenge)
+  @prop({ required: true, ref: () => Challenge })
+  challengeNew: Ref<Challenge>
+}
+
 export const ChallengeModel = getModelForClass<typeof Challenge>(Challenge, { schemaOptions: { timestamps: { createdAt: true } } })
+export const ChallengeFrameEdgeModel = getModelForClass<typeof ChallengeFrameEdge>(ChallengeFrameEdge, { schemaOptions: { timestamps: { createdAt: true } } })
+export const ChallengeMyinTSetEdgeModel = getModelForClass<typeof ChallengeMyinTSetEdge>(ChallengeMyinTSetEdge, {
+  schemaOptions: { timestamps: { createdAt: true } },
+})
+export const ChallengeVersionEdgeModel = getModelForClass<typeof ChallengeVersionEdge>(ChallengeVersionEdge, {
+  schemaOptions: { timestamps: { createdAt: true } },
+})
 
 @InputType({ description: 'The type used for creating a new frame' })
 export class CreateChallengeInput {
@@ -68,6 +125,9 @@ export class CreateChallengeInput {
 
   @Field(() => [ListFrameInput]) // a challenge has 0..n frames
   frames: ListFrameInput[]
+
+  @Field(() => String)
+  settings: string
 }
 
 @InputType({ description: 'The type used for adding a challenge' })
@@ -81,7 +141,7 @@ export class GetChallengeInput {
   Id: string
 }
 
-@InputType({ description: 'The type used for adding a frame' })
+@InputType({ description: 'The type used for getting a list of frames' })
 export class ListRefFrame {
   @Field(() => Frame)
   frame: Ref<Frame>

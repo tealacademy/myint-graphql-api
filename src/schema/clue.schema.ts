@@ -1,10 +1,9 @@
-import { getModelForClass, modelOptions, index, Prop, prop, Ref } from '@typegoose/typegoose'
-import { Tag, CreateTagInput } from './tag.schema'
-import { Piece, ListPieceInput } from './piece.schema'
-import { Frame, ListFrameInput } from './frame.schema'
+import { getModelForClass, modelOptions, prop, Ref } from '@typegoose/typegoose'
 import { User } from './user.schema'
-import { Field, InputType, ObjectType, ID, Int, createUnionType, Directive } from 'type-graphql'
-import { IsOptional } from 'class-validator'
+import { VersionEdge } from './edge.schema'
+import { Piece } from './piece.schema'
+import { Frame } from './frame.schema'
+import { Field, InputType, ObjectType, ID, Int } from 'type-graphql'
 
 // export const cluePiecesFramesList = createUnionType({
 //   name: 'CluePiecesFrames', // the name of the GraphQL union
@@ -25,17 +24,12 @@ export class Clue {
   @prop({ required: false })
   solution?: string
 
-  // @Field(() => [cluePiecesFramesList])
-  // @prop({ required: false })
-  // piecesFramesList?: typeof cluePiecesFramesList[]
-
+  /**
+   * All objects that you need to solve the clue. In general pieces or frames (but also other Clues?)
+   */
   @Field(() => [ObjReferenceList], { nullable: true })
   @prop({ required: false })
-  objReferencesList?: ObjReferenceList[]
-
-  @Field(() => Tag, { nullable: true })
-  @prop({ required: false, defaultValue: null })
-  tag?: Tag
+  objectList?: ObjReferenceList[]
 
   @Field(() => [Idea], { nullable: true })
   @prop({ required: false })
@@ -49,38 +43,38 @@ export class Clue {
   @prop({ default: true })
   show: boolean
 
-  @Field(() => Int)
-  @prop({ required: true })
-  index: number
-
   @prop({ required: false })
   deleted?: Date
 }
+
 /**
  *  We store this list as a list of Ref's to an Id
- *  and 'type' determines if it is a Piece or a Frame
+ *  and 'type' determines what type of object it is. (generally Piece or Frame)
  */
 @ObjectType({ description: 'The objectReferences model (in general references to pieces or frames)' })
 @modelOptions({ options: { allowMixed: 0 } })
 export class ObjReferenceList {
   @Field(() => String)
-  @prop({ required: true })
-  type: string
+  @prop({ required: true, items: ['Piece', 'Frame'] })
+  type!: string
 
-  @Field(() => [String])
-  @prop({ required: false, ref: () => String })
-  Id: Ref<String>
+  @Field(() => String)
+  @prop({ required: false, refPath: 'type' })
+  Id: Ref<Piece | Frame>
 }
 
+/**
+ * Every idea is unique so is a nested document
+ */
 @ObjectType({ description: 'The idea-object model' })
-@modelOptions({ options: { allowMixed: 0 } })
+// @modelOptions({ options: { allowMixed: 0 } })
 class Idea {
   @Field((type) => ID)
   _id: string
 
-  @Field(() => User) // Remove if field not publicly accessible?
+  @Field(() => User)
   @prop({ required: true, ref: () => User })
-  owner: Ref<User> // This is a reference to a user
+  owner: Ref<User> // This is a reference to the participant who added the Idea
 
   @Field(() => String)
   @prop({ required: true })
@@ -90,17 +84,53 @@ class Idea {
   @prop({ default: 0 })
   score: number
 
-  // @Field(() => [cluePiecesFramesList])
-  // @prop({ required: false })
-  // piecesFramesList?: typeof cluePiecesFramesList[]
+  @Field(() => Boolean)
+  @prop({ default: 0 })
+  selected: boolean // Idea added to the solution?
 
+  /**
+   * All objects that explain the Idea. In general pieces or frames
+   * (but can also be other like Clues?)
+   */
   @Field(() => [ObjReferenceList])
   @prop({ required: false })
-  objReferencesList?: ObjReferenceList[]
+  objectList?: ObjReferenceList[]
 }
 
-export const ClueModel = getModelForClass<typeof Clue>(Clue, { schemaOptions: { timestamps: { createdAt: true } } })
+// @ObjectType({ description: 'The edge between challenge and frames' })
+// @modelOptions({ options: { allowMixed: 0 } })
+// export class ClueIdeaEdge extends Edge {
+//   @Field(() => Clue)
+//   @prop({ required: true, ref: () => Clue })
+//   clue: Ref<Clue>
+
+//   @Field(() => Idea)
+//   @prop({ required: true, ref: () => Idea })
+//   idea: Ref<Idea>
+
+//   @Field(() => Number)
+//   @prop({ required: true })
+//   order: number
+// }
+
+@ObjectType({ description: 'The edge for changes on a clue' })
+@modelOptions({ options: { allowMixed: 0 } })
+export class ClueVersionEdge extends VersionEdge {
+  // Original clue
+  @Field(() => Clue)
+  @prop({ required: true, ref: () => Clue })
+  clueOld: Ref<Clue>
+
+  // Copy or original clue
+  @Field(() => Clue)
+  @prop({ required: true, ref: () => Clue })
+  clueNew: Ref<Clue>
+}
+
+export const ClueModel = getModelForClass<typeof Clue>(Clue, { schemaOptions: { timestamps: { createdAt: true, updatedAt: true } } })
 export const IdeaModel = getModelForClass<typeof Idea>(Idea, { schemaOptions: { timestamps: { createdAt: true } } })
+// export const ClueIdeaEdgeModel = getModelForClass<typeof ClueIdeaEdge>(ClueIdeaEdge, { schemaOptions: { timestamps: { createdAt: true } } })
+export const ClueVersionEdgeModel = getModelForClass<typeof ClueVersionEdge>(ClueVersionEdge, { schemaOptions: { timestamps: { createdAt: true } } })
 
 @InputType({ description: 'The type used for creating a new frame' })
 export class CreateClueInput {
@@ -115,10 +145,7 @@ export class CreateClueInput {
 
   // https://typegraphql.com/docs/unions.html
   @Field(() => [ObjReferenceListInput], { nullable: true })
-  objReferencesList?: ObjReferenceListInput[]
-
-  @Field(() => CreateTagInput, { nullable: true })
-  tag?: CreateTagInput
+  objectList?: ObjReferenceListInput[]
 
   @Field(() => [CreateIdeaInput], { nullable: true })
   ideas?: CreateIdeaInput[]
@@ -128,9 +155,6 @@ export class CreateClueInput {
 
   @Field(() => Boolean, { defaultValue: true })
   show: boolean
-
-  @Field(() => Int)
-  index: number
 }
 
 @InputType({ description: 'The type used for creating a new frame' })
@@ -142,7 +166,7 @@ export class CreateIdeaInput {
   description: string
 
   @Field(() => [ObjReferenceListInput], { nullable: true })
-  objReferencesList?: ObjReferenceListInput[]
+  objectList?: ObjReferenceListInput[]
 }
 
 @InputType({ description: 'The type to input a piece or a frame' })

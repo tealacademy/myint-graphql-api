@@ -2,8 +2,7 @@ import { omit, pick } from 'lodash'
 import { ApolloError } from 'apollo-server-errors'
 import bcrypt from 'bcrypt'
 import { nanoid } from 'nanoid'
-import { CreateUserInput, LoginInput, UserModel, User } from '../schema/user.schema'
-import EdgeService from '../service/edge.service'
+import { CreateUserInput, LoginInput, UserModel, User, AddUserGroupInput, UserGroupEdgeModel } from '../schema/user.schema'
 import ProfileService from '../service/profile.service'
 import Context from '../types/context'
 import { signJwt } from '../utils/jwt'
@@ -11,7 +10,10 @@ import jwt from 'jsonwebtoken'
 import config from 'config'
 import nodemailer from 'nodemailer'
 import LogService from './log.service'
-import { LOG_EDGES, USER_EDGES, LOG_ACTIONS, ERROR_MESSAGES } from '../types/enums'
+import GroupService from './group.service'
+import RoleService from './role.service'
+import { firstAdminProfile, firstAdminUser, adminGroup, adminRole } from './../types/init'
+import { LOG_EDGES, USER_EDGES, LOG_ACTIONS, ERROR_MESSAGES } from '../types/data'
 // const EMAIL_SECRET = 'asdf1093KMnzxcvnkljvasdu09123nlasdasdf'
 
 class UserService {
@@ -34,6 +36,36 @@ class UserService {
     const newLog = new LogService().createLog({ action: LOG_ACTIONS.CREATE_USER, data: dataString }, newUser, LOG_EDGES.USER_LOG_ITEM)
 
     return newUser
+  }
+
+  /** Creates a default Admin-account, so does not need input from client-side
+   */
+  async createAdmin() {
+    console.log('Creating AdminUser + Profile')
+
+    // creating a new admin-user: has to be confirmed by tealacademy.nl@gmail.com
+    // needs a first profile:
+    const newProfile = await new ProfileService().createProfile(firstAdminProfile)
+
+    // Create user with encrypted password
+    const confirmToken = nanoid(32)
+    const newUser = await UserModel.create({ ...firstAdminUser, profile: newProfile._id, confirmToken })
+
+    // Add administrator-role
+    const newRole = await new RoleService().createRole(adminRole)
+
+    // Add administrator-group with ref to new Role
+    const newGroup = await new GroupService().createGroup({ ...adminGroup, roles: [newRole._id] })
+
+    // Link administrator-group to user
+    const newUserGroupEdge = await UserGroupEdgeModel.create({ user: newUser._id, group: newGroup._id, owner: newUser._id, label: 'new administrator' })
+
+    console.log(`Created User ${firstAdminUser} + Profile ${firstAdminProfile}`)
+    return newUser
+  }
+
+  async addUserGroup(input: AddUserGroupInput) {
+    // When adding a user to a group, you add a GroupUserEdge
   }
 
   async registerUser(input: CreateUserInput) {

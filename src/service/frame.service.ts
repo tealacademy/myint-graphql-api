@@ -7,7 +7,7 @@ import MyinTSetService from './myintset.service'
 import ClueService from './clue.service'
 import EdgeService from './edge.service'
 import { User } from '../schema/user.schema'
-import { FRAME_EDGES, CHALLENGE_EDGES } from '../types/enums'
+import { FRAME_EDGES, CHALLENGE_EDGES } from '../types/data'
 
 class FrameService {
   /** Create complete document with filled 1:n relations for tags, clues

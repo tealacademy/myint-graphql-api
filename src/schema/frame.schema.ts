@@ -1,6 +1,7 @@
 import { getModelForClass, modelOptions, prop, Ref } from '@typegoose/typegoose'
 import { Tag, CreateTagInput } from './tag.schema'
 import { User } from './user.schema'
+import { Edge, VersionEdge } from './edge.schema'
 import { Challenge, ListChallengeInput } from './challenge.schema'
 import { Clue, CreateClueInput } from './clue.schema'
 import { Field, InputType, ObjectType, ID, Int, createUnionType } from 'type-graphql'
@@ -19,15 +20,16 @@ export class Frame {
   @prop({ required: true })
   title: string
 
-  @Field(() => Challenge, { nullable: true }) // A frame has 0 or 1 challenge
-  @prop({ required: false, ref: () => Challenge })
-  challenge?: Ref<Challenge>
+  // @Field(() => Challenge, { nullable: true }) // A frame has 0 or 1 challenge
+  // @prop({ required: false, ref: () => Challenge })
+  // challenge?: Ref<Challenge>
 
-  @Field(() => [Clue], { nullable: true })
-  @prop({ required: false })
-  clues?: Clue[]
+  // @Field(() => [Clue], { nullable: true })
+  // @prop({ required: false })
+  // clues?: Clue[]
 
-  // The tags associated with this frame.
+  // The tags associated with this frame. No ref because of performance: necessary in UI
+  // No edge because keeping track of creation of relation not important
   @Field(() => [Tag])
   @prop({ required: true })
   tags: Tag[]
@@ -44,6 +46,7 @@ export class Frame {
   @prop({ required: true, nullable: true })
   settings: string
 
+  // DRAFT/UNANSWERED/ANSWERED/DELETED/SAVING
   @Field(() => String)
   @prop({ required: true })
   status: string
@@ -60,7 +63,50 @@ export class Frame {
   deleted?: Date
 }
 
-export const FrameModel = getModelForClass<typeof Frame>(Frame, { schemaOptions: { timestamps: { createdAt: true } } })
+@ObjectType({ description: 'The edge between frame and clues' })
+@modelOptions({ options: { allowMixed: 0 } })
+export class FrameClueEdge extends Edge {
+  @Field(() => Frame)
+  @prop({ required: true, ref: () => Frame })
+  frame: Ref<Frame>
+
+  @Field(() => Clue)
+  @prop({ required: true, ref: () => Clue })
+  clue: Ref<Clue>
+
+  @Field(() => Number)
+  @prop({ required: true })
+  order: number
+}
+
+@ObjectType({ description: 'The edge for changes on a clue' })
+@modelOptions({ options: { allowMixed: 0 } })
+export class FrameVersionEdge extends VersionEdge {
+  // Original frame
+  @Field(() => Frame)
+  @prop({ required: true, ref: () => Frame })
+  frameOld: Ref<Frame>
+
+  // Copy or original frame
+  @Field(() => Frame)
+  @prop({ required: true, ref: () => Frame })
+  frameNew: Ref<Frame>
+}
+
+// @ObjectType({ description: 'The edge between frame and tags' })
+// export class FrameTagEdge extends Edge {
+//   @Field(() => Frame)
+//   @prop({ required: true, ref: () => Frame })
+//   frame: Ref<Frame>
+
+//   @Field(() => Tag)
+//   @prop({ required: true, ref: () => Tag })
+//   tag: Ref<Tag>
+// }
+
+export const FrameModel = getModelForClass<typeof Frame>(Frame, { schemaOptions: { timestamps: { createdAt: true, updatedAt: true } } })
+export const FrameClueEdgeModel = getModelForClass<typeof FrameClueEdge>(FrameClueEdge, { schemaOptions: { timestamps: { createdAt: true } } })
+export const FrameVersionEdgeModel = getModelForClass<typeof FrameVersionEdge>(FrameVersionEdge, { schemaOptions: { timestamps: { createdAt: true } } })
 
 @InputType({ description: 'The type used for creating a new frame' })
 export class CreateFrameInput {

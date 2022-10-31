@@ -1,8 +1,9 @@
-import { getModelForClass, prop, modelOptions, pre, ReturnModelType, queryMethod, index } from '@typegoose/typegoose' // see https://typegoose.github.io/typegoose/
+import { getModelForClass, prop, modelOptions, Ref } from '@typegoose/typegoose' // see https://typegoose.github.io/typegoose/
 import { AsQueryMethod } from '@typegoose/typegoose/lib/types'
 import { IsEmail, IsOptional, MaxLength, MinLength } from 'class-validator'
 import { Field, InputType, ObjectType, ID } from 'type-graphql'
 import { User } from '../schema/user.schema'
+import { Edge } from './edge.schema'
 
 @ObjectType({ description: 'The user-profile model' }) // grapQL does not know this will be an object so we add @Object() (from type-graphql)
 @modelOptions({ options: { allowMixed: 0 } })
@@ -38,12 +39,24 @@ export class Profile {
   @prop({ required: false })
   deleted?: Date
 
-  @Field(() => [User]) // a profile can have 0..n users (users can have more credentials)
-  @prop({ required: true })
-  users: User[]
+  // @Field(() => [User]) // a profile can have 0..n users (users can have more credentials)
+  // @prop({ required: true, ref: () => User })
+  // users: Ref<User>[]
+}
+
+@ObjectType({ description: 'The edge between challenge and frames' })
+export class ProfileUserEdge extends Edge {
+  @Field(() => Profile)
+  @prop({ required: true, ref: () => Profile })
+  profile: Ref<Profile>
+
+  @Field(() => User)
+  @prop({ required: true, ref: () => User })
+  user: Ref<User>
 }
 
 export const ProfileModel = getModelForClass<typeof Profile>(Profile, { schemaOptions: { timestamps: { createdAt: true } } })
+export const ProfileUserEdgeModel = getModelForClass<typeof ProfileUserEdge>(ProfileUserEdge, { schemaOptions: { timestamps: { createdAt: true } } })
 
 @InputType({ description: 'The type used for creating a new profile' })
 export class CreateProfileInput {

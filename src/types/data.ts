@@ -1,7 +1,29 @@
+export enum MODELS {
+  CHALLENGE = 'Challenge',
+  CLUE = 'Clue',
+  FRAME = 'Frame',
+  GROUP = 'Group',
+  MYINTSET = 'MyinTSet',
+  PIECE = 'Piece',
+  PROFILE = 'Profile',
+  ROLE = 'Role',
+  TAG = 'Tag',
+  THEME = 'Theme',
+  USER = 'User',
+} // ! missing the edge-models
+
+export enum ROLES {
+  VIEWER = 2001,
+  EDITOR = 1984,
+  ADMIN = 5150,
+}
+
 export enum PIECE_EDGES {
-  PIECE_TAG = 'piece_tag',
-  PIECE_SLIDE = 'piece_slide',
-  PIECE_OWNER = 'piece_owner',
+  // PIECE_TAG = 'piece_tag',
+  // PIECE_SLIDE = 'piece_slide',
+  // PIECE_OWNER = 'piece_owner',
+  PIECE_CREATE = 'piece_create',
+  PIECE_UPDATE = 'piece_update',
 }
 
 export enum FRAME_EDGES {

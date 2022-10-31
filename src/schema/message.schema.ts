@@ -9,17 +9,17 @@ export class Message {
   @Field((type) => ID)
   _id: string
 
-  @Field(() => User) // Remove if field not publicly accessible?
+  @Field(() => User)
   @prop({ required: true, ref: () => User })
-  owner: Ref<User> // This is a reference to a user
+  owner: Ref<User> // This is a reference to user who created the message
+
+  @Field(() => Group)
+  @prop({ required: true, ref: () => Group })
+  group: Ref<Group> // This is a reference to group message was sent to
 
   @Field(() => String)
   @prop({ required: true })
   body: string
-
-  @Field(() => Group) // Remove if field not publicly accessible?
-  @prop({ required: true, ref: () => Group })
-  group: Ref<Group> // This is a reference to a user
 }
 
 export const MessageModel = getModelForClass<typeof Message>(Message, { schemaOptions: { timestamps: { createdAt: true } } })

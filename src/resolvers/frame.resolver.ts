@@ -21,8 +21,8 @@ export default class FrameResolver {
   @Query(() => [Frame])
   getFrames(@Ctx() context: Context) {
     const user = context.user!
-    const userId = '61e1871699df55f4e68933d7'
-    return this.frameService.findUserFrames(userId) //user._id)
+
+    return this.frameService.findUserFrames(user._id)
   }
 
   @Authorized()

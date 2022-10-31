@@ -2,7 +2,6 @@ import { getModelForClass, modelOptions, index, Prop, prop, Ref } from '@typegoo
 import { Tag, ListTagInput } from './tag.schema'
 import { Frame, ListFrameInput } from './frame.schema'
 import { Piece, ListPieceInput } from './piece.schema'
-import { Clue } from './clue.schema'
 import { User } from './user.schema'
 import { Field, InputType, ObjectType, ID, Int, createUnionType } from 'type-graphql'
 
@@ -16,17 +15,19 @@ export class MyinTSet {
   @prop({ required: true, ref: () => User })
   owner: Ref<User> // This is a reference to a user
 
-  @Field(() => [String], { nullable: true }) // a myintset has 0..n tags
-  @prop({ required: false, default: [], ref: () => String })
-  tags?: Ref<string>[]
+  // Why does a MyinTSet need tags?
+  // To show all pieces and frames with those tags? => maybe handy? I don't know
+  // @Field(() => [String], { nullable: true }) // a myintset has 0..n tags
+  // @prop({ required: false, default: [], ref: () => Tag })
+  // tags?: Ref<Tag>[]
 
   @Field(() => [String], { nullable: true }) // a myintset has 0..n frames
-  @prop({ required: false, default: [], ref: () => String })
-  pieces?: Ref<string>[]
+  @prop({ required: false, default: [], ref: () => Piece })
+  pieces: Ref<Piece>[]
 
   @Field(() => [String], { nullable: true }) // a myintset has 0..n frames
-  @prop({ required: false, default: [], ref: () => String })
-  frames?: Ref<string>[]
+  @prop({ required: false, default: [], ref: () => Frame })
+  frames: Ref<Frame>[]
 
   @prop({ required: false })
   deleted?: Date
@@ -39,8 +40,8 @@ export class CreateMyinTSetInput {
   @Field(() => String)
   Id: string
 
-  @Field(() => String) // Remove if field not publicly accessible?
-  owner: string // This is a reference to a user
+  @Field()
+  owner?: string // This is a reference to a user. If null then current user = owner
 
   @Field(() => [ListPieceInput], { nullable: true }) // a myintset has 0..n pieces
   pieces?: ListPieceInput[]
@@ -48,8 +49,8 @@ export class CreateMyinTSetInput {
   @Field(() => [ListFrameInput], { nullable: true }) // a myintset has 0..n frames
   frames?: ListFrameInput[]
 
-  @Field(() => [ListTagInput], { nullable: true }) // a myintset has 0..n frames
-  tags?: ListTagInput[]
+  // @Field(() => [ListTagInput], { nullable: true }) // a myintset has 0..n frames
+  // tags?: ListTagInput[]
 }
 
 @InputType({ description: 'The type used for getting a myintset' })

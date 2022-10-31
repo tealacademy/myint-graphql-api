@@ -3,7 +3,7 @@ import { ObjReferenceListInput } from '../schema/clue.schema'
 import { CreateMessageInput, MessageModel, IMessage, Message } from '../schema/message.schema'
 import { User } from '../schema/user.schema'
 import UserService from './user.service'
-import { SUBSCRIPTIONS } from './../types/enums'
+import { SUBSCRIPTIONS } from '../types/data'
 
 class MessageService {
   async createMessage(pubSub: PubSubEngine, input: CreateMessageInput & { owner: User['_id'] }) {

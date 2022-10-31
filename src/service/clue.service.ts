@@ -2,7 +2,7 @@ import { GetClueInput, ClueModel, CreateClueInput, IdeaModel, CreateIdeaInput } 
 import EdgeService from '../service/edge.service'
 import TagService from './tag.service'
 import { User } from '../schema/user.schema'
-import { FRAME_EDGES } from '../types/enums'
+import { FRAME_EDGES } from '../types/data'
 
 class ClueService {
   async createClue(input: CreateClueInput) {

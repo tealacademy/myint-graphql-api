@@ -1,10 +1,12 @@
-import { getModelForClass, prop, pre, ReturnModelType, queryMethod, modelOptions, index } from '@typegoose/typegoose' // see https://typegoose.github.io/typegoose/
+import { getModelForClass, prop, pre, ReturnModelType, queryMethod, modelOptions, index, Ref } from '@typegoose/typegoose' // see https://typegoose.github.io/typegoose/
 import { AsQueryMethod } from '@typegoose/typegoose/lib/types'
 import bcrypt from 'bcrypt'
 import { IsEmail, MaxLength, MinLength } from 'class-validator'
 import { Field, InputType, ObjectType, ID, Int } from 'type-graphql'
 import { Profile, CreateProfileInput } from './profile.schema'
 import { Group } from './group.schema'
+import { Role } from './role.schema'
+import { Edge } from './edge.schema'
 
 function findByEmail(this: ReturnModelType<typeof User, QueryHelpers>, email: User['eMail']) {
   return this.findOne({ email })
@@ -41,9 +43,10 @@ export class User {
   @prop({ required: true })
   passWord: string
 
-  @Field(() => Profile)
-  @prop({ required: false })
-  profile?: Profile
+  // Relation through Edge
+  // @Field(() => Profile)
+  // @prop({ required: false, ref: () => Profile })
+  // profile?: Ref<Profile>
 
   @Field(() => String)
   @prop({ required: true })
@@ -53,23 +56,38 @@ export class User {
   @prop({ required: true, nullable: true })
   settings: string
 
-  @Field(() => [Number])
-  @prop({ required: true, default: [] })
-  roles: number[]
+  // @Field(() => [Role])
+  // @prop({ required: true, default: [], ref: () => Role })
+  // roles: Ref<Role>[]
 
-  @Field(() => [Group])
-  @prop({ required: true, default: [] })
-  groups: Group[]
+  // Relation through Edge
+  // @Field(() => [Group])
+  // @prop({ required: true, default: [], ref: () => Group })
+  // groups: Ref<Group>[]
 
   @prop({ required: true, default: false })
   active: boolean
+
+  @prop(() => Profile)
+  profile: Ref<Profile>
 
   @prop({ required: false })
   deleted?: Date
 }
 
-export const UserModel = getModelForClass<typeof User, QueryHelpers>(User, { schemaOptions: { timestamps: { createdAt: true } } })
+@ObjectType({ description: 'The edge between user and group' })
+export class UserGroupEdge extends Edge {
+  @Field(() => User)
+  @prop({ required: true, ref: () => User })
+  user: Ref<User>
 
+  @Field(() => Group)
+  @prop({ required: true, ref: () => Group })
+  group: Ref<Group>
+}
+
+export const UserModel = getModelForClass<typeof User, QueryHelpers>(User, { schemaOptions: { timestamps: true } })
+export const UserGroupEdgeModel = getModelForClass<typeof UserGroupEdge, QueryHelpers>(UserGroupEdge, { schemaOptions: { timestamps: true } })
 @InputType({ description: 'The type used for creating a new user' })
 export class CreateUserInput {
   @IsEmail()
@@ -88,8 +106,8 @@ export class CreateUserInput {
   @Field(() => String, { nullable: true }) // When no settings, user gets defaultSettings in frontend
   settings?: string
 
-  @Field(() => CreateProfileInput, { nullable: true })
-  profile?: CreateProfileInput
+  @Field(() => String)
+  profile: string
 }
 
 @InputType()
@@ -99,4 +117,13 @@ export class LoginInput {
 
   @Field(() => String)
   passWord: string
+}
+
+@InputType()
+export class AddUserGroupInput {
+  @Field(() => String)
+  Id: string
+
+  @Field(() => String)
+  groupId: string
 }
