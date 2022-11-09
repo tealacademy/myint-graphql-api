@@ -2,9 +2,11 @@ import { getModelForClass, index, isRefType, isRefTypeArray, modelOptions, Prop,
 import { Field, InputType, ObjectType, ID, Int } from 'type-graphql'
 import { customAlphabet } from 'nanoid'
 import { User } from './user.schema'
-import { VersionEdge } from './edge.schema'
+import { MyinTObjectOwner } from './myintobject.schema'
+import { Edge, VersionEdge } from './edge.schema'
 // import { Slide, CreateSlideInput } from './slide.schema'
 import { Theme } from './theme.schema'
+import { UserGroup } from './group.schema'
 import { Tag, CreateTagInput } from './tag.schema'
 import { Changeset } from './../utils/json-diff-ts/jsonDiff'
 import { IsNumber, MaxLength, Min, MinLength, IsUrl, IsArray, ValidateNested, IsObject } from 'class-validator'
@@ -15,15 +17,7 @@ const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz123456789', 10)
 @ObjectType({ description: 'The piece model' })
 // @index({ index: 1 })
 @modelOptions({ options: { allowMixed: 0 } }) // https://typegoose.github.io/typegoose/docs/api/decorators/model-options/#allowmixed
-export class Piece {
-  @Field((type) => ID)
-  _id: string
-
-  // This is a reference to the user who created the piece. Can never be another
-  @Field(() => User)
-  @prop({ required: true, ref: () => User })
-  owner: Ref<User>
-
+export class Piece extends MyinTObjectOwner {
   @Field(() => String)
   @prop({ required: true, defaultValue: '' })
   title: string
@@ -61,9 +55,6 @@ export class Piece {
   @Field(() => Boolean)
   @prop({ required: true, defaultValue: false })
   updateWithOriginal: boolean
-
-  @prop({ required: false })
-  deleted?: Date
 }
 
 @ObjectType({ description: 'The slide model' })
@@ -135,6 +126,20 @@ export class PieceVersionEdge extends VersionEdge {
   @Field(() => Piece)
   @prop({ required: true, ref: () => Piece })
   newPiece: Ref<Piece>
+}
+
+@ObjectType({ description: 'The edge for changes on a clue' })
+@modelOptions({ options: { allowMixed: 0 } })
+export class PieceGroupEdge extends Edge {
+  // Original piece
+  @Field(() => Piece)
+  @prop({ required: true, ref: () => Piece })
+  piece: Ref<Piece>
+
+  // Copy or original piece
+  @Field(() => UserGroup)
+  @prop({ required: true, ref: () => UserGroup })
+  group: Ref<UserGroup>
 }
 
 export const PieceModel = getModelForClass<typeof Piece>(Piece, { schemaOptions: { timestamps: { createdAt: true, updatedAt: true } } })

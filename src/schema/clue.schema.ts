@@ -1,5 +1,5 @@
 import { getModelForClass, modelOptions, prop, Ref } from '@typegoose/typegoose'
-import { User } from './user.schema'
+import { MyinTObjectOwner } from './myintobject.schema'
 import { VersionEdge } from './edge.schema'
 import { Piece } from './piece.schema'
 import { Frame } from './frame.schema'
@@ -12,10 +12,7 @@ import { Field, InputType, ObjectType, ID, Int } from 'type-graphql'
 
 @ObjectType({ description: 'The clue-object model' })
 @modelOptions({ options: { allowMixed: 0 } })
-export class Clue {
-  @Field((type) => ID)
-  _id: string
-
+export class Clue extends MyinTObjectOwner {
   @Field(() => String)
   @prop({ required: true })
   question: string
@@ -42,9 +39,6 @@ export class Clue {
   @Field(() => Boolean)
   @prop({ default: true })
   show: boolean
-
-  @prop({ required: false })
-  deleted?: Date
 }
 
 /**
@@ -67,14 +61,8 @@ export class ObjReferenceList {
  * Every idea is unique so is a nested document
  */
 @ObjectType({ description: 'The idea-object model' })
-// @modelOptions({ options: { allowMixed: 0 } })
-class Idea {
-  @Field((type) => ID)
-  _id: string
-
-  @Field(() => User)
-  @prop({ required: true, ref: () => User })
-  owner: Ref<User> // This is a reference to the participant who added the Idea
+class Idea extends MyinTObjectOwner {
+  // Owner is a reference to the participant who added the Idea
 
   @Field(() => String)
   @prop({ required: true })

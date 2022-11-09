@@ -1,11 +1,9 @@
 import { getModelForClass, prop } from '@typegoose/typegoose'
 import { Field, InputType, ObjectType, ID, Int } from 'type-graphql'
+import { MyinTObjectOwner } from './myintobject.schema'
 
 @ObjectType({ description: 'The theme model' })
-export class Theme {
-  @Field((type) => ID)
-  _id: string
-
+export class Theme extends MyinTObjectOwner {
   @Field(() => String)
   @prop({ required: true })
   name: string
@@ -13,9 +11,6 @@ export class Theme {
   @Field(() => String, { nullable: true })
   @prop({ required: false })
   layout?: string
-
-  @prop({ required: false })
-  deleted?: Date
 }
 
 export const ThemeModel = getModelForClass<typeof Theme>(Theme, { schemaOptions: { timestamps: { createdAt: true } } })

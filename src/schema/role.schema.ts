@@ -2,14 +2,11 @@ import { getModelForClass, modelOptions, index, Prop, prop, Ref } from '@typegoo
 import { Field, InputType, ObjectType, ID, Int } from 'type-graphql'
 import { VersionEdge } from './edge.schema'
 import { MODELS } from './../types/data'
-import Context from '../types/context'
+import { MyinTObjectOwner } from './myintobject.schema'
 
 @ObjectType({ description: 'The role model' })
 @modelOptions({ options: { allowMixed: 0 } })
-export class Role {
-  @Field((type) => ID)
-  _id: string
-
+export class Role extends MyinTObjectOwner {
   @Field(() => String)
   @prop({ required: false })
   title?: string
@@ -21,9 +18,6 @@ export class Role {
   @Field(() => [Permission])
   @prop({ required: true, default: [] })
   permissions: Permission[]
-
-  @prop({ required: false })
-  deleted?: Date
 }
 
 @ObjectType({ description: 'The permissions' })

@@ -12,7 +12,7 @@ import nodemailer from 'nodemailer'
 import LogService from './log.service'
 import GroupService from './group.service'
 import RoleService from './role.service'
-import { firstAdminProfile, firstAdminUser, adminGroup, adminRole } from './../types/init'
+import { firstAdminProfile, firstAdminUser, adminGroup, adminRole, defaultRole } from './../types/init'
 import { LOG_EDGES, USER_EDGES, LOG_ACTIONS, ERROR_MESSAGES } from '../types/data'
 // const EMAIL_SECRET = 'asdf1093KMnzxcvnkljvasdu09123nlasdasdf'
 
@@ -48,14 +48,14 @@ class UserService {
     const newProfile = await new ProfileService().createProfile(firstAdminProfile)
 
     // Create user with encrypted password
-    const confirmToken = nanoid(32)
-    const newUser = await UserModel.create({ ...firstAdminUser, profile: newProfile._id, confirmToken })
+    // const confirmToken = nanoid(32)
+    const newUser = await this.createUser({ ...firstAdminUser, profile: newProfile._id })
 
     // Add administrator-role
-    const newRole = await new RoleService().createRole(adminRole)
+    const newRole = await new RoleService().createRole({ ...adminRole, owner: newUser._id })
 
     // Add administrator-group with ref to new Role
-    const newGroup = await new GroupService().createGroup({ ...adminGroup, roles: [newRole._id] })
+    const newGroup = await new GroupService().createUserGroup({ ...adminGroup, owner: newUser._id, roles: [newRole._id] })
 
     // Link administrator-group to user
     const newUserGroupEdge = await UserGroupEdgeModel.create({ user: newUser._id, group: newGroup._id, owner: newUser._id, label: 'new administrator' })

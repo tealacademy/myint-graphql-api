@@ -25,6 +25,89 @@ export const adminGroup: CreateGroupInput = {
   description: DEFAULT_VALUES.ADMIN_GROUP_DESCRIPTION,
 }
 
+export const defaultRole: CreateRoleInput = {
+  Id: '',
+  permissions: [
+    {
+      objectType: MODELS.CHALLENGE,
+      create: false,
+      read: true,
+      update: false,
+      delete: false,
+    },
+    {
+      objectType: MODELS.CLUE,
+      create: true,
+      read: true,
+      update: true,
+      delete: true,
+    },
+    {
+      objectType: MODELS.FRAME,
+      create: true,
+      read: true,
+      update: true,
+      delete: true,
+    },
+    {
+      objectType: MODELS.GROUP,
+      create: true,
+      read: true,
+      update: true,
+      delete: true,
+    },
+    {
+      objectType: MODELS.MYINTSET,
+      create: true,
+      read: true,
+      update: true,
+      delete: true,
+    },
+    {
+      objectType: MODELS.PIECE,
+      create: true,
+      read: true,
+      update: true,
+      delete: true,
+    },
+    {
+      objectType: MODELS.PROFILE,
+      create: true,
+      read: true,
+      update: true,
+      delete: true,
+    },
+    {
+      objectType: MODELS.ROLE,
+      create: true,
+      read: true,
+      update: true,
+      delete: true,
+    },
+    {
+      objectType: MODELS.TAG,
+      create: true,
+      read: true,
+      update: true,
+      delete: true,
+    },
+    {
+      objectType: MODELS.THEME,
+      create: true,
+      read: true,
+      update: true,
+      delete: true,
+    },
+    {
+      objectType: MODELS.USER,
+      create: true,
+      read: true,
+      update: true,
+      delete: true,
+    },
+  ],
+}
+
 export const adminRole: CreateRoleInput = {
   Id: '',
   permissions: [

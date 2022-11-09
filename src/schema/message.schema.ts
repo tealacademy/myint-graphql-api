@@ -1,28 +1,31 @@
 import { getModelForClass, modelOptions, index, Prop, prop, Ref } from '@typegoose/typegoose'
 import { Field, InputType, ObjectType, InterfaceType, ID, Int } from 'type-graphql'
-import { User } from './user.schema'
-import { Group } from './group.schema'
+import { Edge } from './edge.schema'
+import { MyinTObjectOwner } from './myintobject.schema'
+import { ParticipantGroup } from './group.schema'
 
 @ObjectType({ description: 'The message model' })
 @modelOptions({ options: { allowMixed: 0 } })
-export class Message {
-  @Field((type) => ID)
-  _id: string
-
-  @Field(() => User)
-  @prop({ required: true, ref: () => User })
-  owner: Ref<User> // This is a reference to user who created the message
-
-  @Field(() => Group)
-  @prop({ required: true, ref: () => Group })
-  group: Ref<Group> // This is a reference to group message was sent to
-
+export class Message extends MyinTObjectOwner {
   @Field(() => String)
   @prop({ required: true })
   body: string
 }
 
+@ObjectType({ description: 'The edge between group and messages' })
+@modelOptions({ options: { allowMixed: 0 } })
+export class ChatGroupMessageEdge extends Edge {
+  @Field(() => ParticipantGroup)
+  @prop({ ref: () => ParticipantGroup })
+  group: Ref<ParticipantGroup>
+
+  @Field(() => Message)
+  @prop({ ref: () => Message })
+  message: Ref<Message>
+}
+
 export const MessageModel = getModelForClass<typeof Message>(Message, { schemaOptions: { timestamps: { createdAt: true } } })
+export const ChatGroupMessageEdgeModel = getModelForClass<typeof ChatGroupMessageEdge>(ChatGroupMessageEdge, { schemaOptions: { timestamps: true } })
 
 @InputType({ description: 'The type used for creating a new message' })
 export class CreateMessageInput implements Partial<Message> {

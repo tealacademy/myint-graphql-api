@@ -5,11 +5,16 @@ export enum MODELS {
   GROUP = 'Group',
   MYINTSET = 'MyinTSet',
   PIECE = 'Piece',
+  PIECEVERSIONEDGE = 'PieceVersionEdge',
   PROFILE = 'Profile',
   ROLE = 'Role',
   TAG = 'Tag',
   THEME = 'Theme',
   USER = 'User',
+  ORGANISATION = 'Organisation',
+  ORGANISATIONGROUPEDGE = 'OrganisationGroupEdge',
+  CHALLENGEFRAMEEDGE = 'ChallengeFrameEdge',
+  CHALLENGEMYINTSETEDGE = 'ChallengeMyinTSetEdge',
 } // ! missing the edge-models
 
 export enum ROLES {

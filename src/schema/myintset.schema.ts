@@ -3,18 +3,12 @@ import { Tag, ListTagInput } from './tag.schema'
 import { Frame, ListFrameInput } from './frame.schema'
 import { Piece, ListPieceInput } from './piece.schema'
 import { User } from './user.schema'
+import { MyinTObjectOwner } from './myintobject.schema'
 import { Field, InputType, ObjectType, ID, Int, createUnionType } from 'type-graphql'
 
 @ObjectType({ description: 'The myintset-object model' })
 @modelOptions({ options: { allowMixed: 0 } })
-export class MyinTSet {
-  @Field((type) => ID)
-  _id: string
-
-  @Field(() => User) // Remove if field not publicly accessible?
-  @prop({ required: true, ref: () => User })
-  owner: Ref<User> // This is a reference to a user
-
+export class MyinTSet extends MyinTObjectOwner {
   // Why does a MyinTSet need tags?
   // To show all pieces and frames with those tags? => maybe handy? I don't know
   // @Field(() => [String], { nullable: true }) // a myintset has 0..n tags
@@ -28,9 +22,6 @@ export class MyinTSet {
   @Field(() => [String], { nullable: true }) // a myintset has 0..n frames
   @prop({ required: false, default: [], ref: () => Frame })
   frames: Ref<Frame>[]
-
-  @prop({ required: false })
-  deleted?: Date
 }
 
 export const MyinTSetModel = getModelForClass<typeof MyinTSet>(MyinTSet, { schemaOptions: { timestamps: { createdAt: true } } })

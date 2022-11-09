@@ -2,22 +2,13 @@ import { getModelForClass, modelOptions, index, Prop, prop, Ref } from '@typegoo
 import { Tag, CreateTagInput } from './tag.schema'
 import { Frame, ListFrameInput } from './frame.schema'
 import { Edge, VersionEdge } from './edge.schema'
-import { User } from './user.schema'
+import { MyinTObjectOwner } from './myintobject.schema'
 import { MyinTSet, CreateMyinTSetInput } from './myintset.schema'
 import { Field, InputType, ObjectType, ID } from 'type-graphql'
 
 @ObjectType({ description: 'The challenge-object model' })
 @modelOptions({ options: { allowMixed: 0 } })
-export class Challenge {
-  @Field((type) => ID)
-  _id: string
-
-  // This is a reference to a user. No need for whole User-object because not visible in UI.
-  // No need for edge because owner is set at creation and will not change.
-  @Field(() => User)
-  @prop({ required: true, ref: () => User })
-  owner: Ref<User>
-
+export class Challenge extends MyinTObjectOwner {
   @Field(() => String, { nullable: true })
   @prop({ required: false })
   name?: string
@@ -50,9 +41,6 @@ export class Challenge {
 
   @Field(() => String)
   settings: string
-
-  @prop({ required: false })
-  deleted?: Date
 }
 
 @ObjectType({ description: 'The edge between challenge and frames' })

@@ -1,21 +1,14 @@
 import { getModelForClass, modelOptions, prop, Ref } from '@typegoose/typegoose'
 import { Tag, CreateTagInput } from './tag.schema'
-import { User } from './user.schema'
+import { MyinTObjectOwner } from './myintobject.schema'
 import { Edge, VersionEdge } from './edge.schema'
-import { Challenge, ListChallengeInput } from './challenge.schema'
+import { ListChallengeInput } from './challenge.schema'
 import { Clue, CreateClueInput } from './clue.schema'
 import { Field, InputType, ObjectType, ID, Int, createUnionType } from 'type-graphql'
 
 @ObjectType({ description: 'The frame model' })
 @modelOptions({ options: { allowMixed: 0 } })
-export class Frame {
-  @Field((type) => ID)
-  _id: string
-
-  @Field(() => User) // Remove if field not publicly accessible?
-  @prop({ required: true, ref: () => User })
-  owner: Ref<User> // This is a reference to a user
-
+export class Frame extends MyinTObjectOwner {
   @Field(() => String)
   @prop({ required: true })
   title: string
@@ -58,9 +51,6 @@ export class Frame {
   @Field(() => Boolean)
   @prop({ required: true, defaultValue: false })
   updateWithOriginal: boolean
-
-  @prop({ required: false })
-  deleted?: Date
 }
 
 @ObjectType({ description: 'The edge between frame and clues' })

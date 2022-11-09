@@ -1,18 +1,24 @@
-import { CreateGroupInput, GetGroupInput, GroupModel } from '../schema/group.schema'
+import { CreateGroupInput, GetGroupInput, UserGroupModel, ParticipantGroupModel } from '../schema/group.schema'
+import { User } from '../schema/user.schema'
 
 class GroupService {
-  async createGroup(input: CreateGroupInput) {
+  async createUserGroup(input: CreateGroupInput & { owner: User['_id'] }) {
     //} & { user: User["_id"] }) {
-    return GroupModel.create(input)
+    return UserGroupModel.create(input)
   }
 
-  async findGroups() {
+  // async createParticipantGroup(input: CreateGroupInput & { owner: User['_id'] }) {
+  //   //} & { user: User["_id"] }) {
+  //   return ParticipantGroupModel.create(input)
+  // }
+
+  async findParticipantGroups() {
     // Pagination login
-    return GroupModel.find().lean()
+    return ParticipantGroupModel.find().lean()
   }
 
-  async findSingleGroup(input: GetGroupInput) {
-    return GroupModel.findOne(input).lean()
+  async findSingleParticipantGroup(input: GetGroupInput) {
+    return ParticipantGroupModel.findOne(input).lean()
   }
 }
 

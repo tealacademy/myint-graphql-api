@@ -5,6 +5,7 @@ import { IsEmail, MaxLength, MinLength } from 'class-validator'
 import { Field, InputType, ObjectType, ID, Int } from 'type-graphql'
 import { Profile, CreateProfileInput } from './profile.schema'
 import { Group } from './group.schema'
+import { MyinTObject } from './myintobject.schema'
 import { Role } from './role.schema'
 import { Edge } from './edge.schema'
 
@@ -31,11 +32,7 @@ interface QueryHelpers {
 @queryMethod(findByEmail) // We find users by email
 @ObjectType({ description: 'The user model' }) // grapQL does not know this will be an object so we add @Object() (from type-graphql)
 @modelOptions({ options: { allowMixed: 0 } })
-export class User {
-  // These @Fields can be accessed with grapQL
-  @Field((type) => ID)
-  _id: string
-
+export class User extends MyinTObject {
   @Field(() => String)
   @prop({ required: true, unique: true })
   eMail: string
@@ -70,9 +67,6 @@ export class User {
 
   @prop(() => Profile)
   profile: Ref<Profile>
-
-  @prop({ required: false })
-  deleted?: Date
 }
 
 @ObjectType({ description: 'The edge between user and group' })

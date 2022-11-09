@@ -1,7 +1,9 @@
+import { InputType } from 'type-graphql'
 import { CreateRoleInput, GetRoleInput, RoleModel } from '../schema/role.schema'
+import { User } from '../schema/user.schema'
 
 class RoleService {
-  async createRole(input: CreateRoleInput) {
+  async createRole(input: CreateRoleInput & { owner: User['_id'] }) {
     //} & { user: User["_id"] }) {
     return RoleModel.create(input)
   }

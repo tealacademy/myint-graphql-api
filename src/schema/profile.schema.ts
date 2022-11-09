@@ -3,15 +3,12 @@ import { AsQueryMethod } from '@typegoose/typegoose/lib/types'
 import { IsEmail, IsOptional, MaxLength, MinLength } from 'class-validator'
 import { Field, InputType, ObjectType, ID } from 'type-graphql'
 import { User } from '../schema/user.schema'
+import { MyinTObject } from './myintobject.schema'
 import { Edge } from './edge.schema'
 
 @ObjectType({ description: 'The user-profile model' }) // grapQL does not know this will be an object so we add @Object() (from type-graphql)
 @modelOptions({ options: { allowMixed: 0 } })
-export class Profile {
-  // These @Fields can be accessed with grapQL
-  @Field((type) => ID)
-  _id: string
-
+export class Profile extends MyinTObject {
   @Field(() => String)
   @prop({ required: true })
   firstName: string
@@ -35,9 +32,6 @@ export class Profile {
   @Field(() => String, { nullable: true })
   @prop({ required: false })
   city?: string
-
-  @prop({ required: false })
-  deleted?: Date
 
   // @Field(() => [User]) // a profile can have 0..n users (users can have more credentials)
   // @prop({ required: true, ref: () => User })

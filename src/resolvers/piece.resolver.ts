@@ -31,16 +31,16 @@ export default class PieceResolver {
     return this.pieceService.findSingleUserPiece({ ...input, owner: user._id })
   }
 
-  @Mutation(() => Boolean)
-  destroyLoosePieceObjects() {
-    console.log('piece resolver')
-    return this.pieceService.destroyLoosePieceObjects()
-  }
+  // @Mutation(() => Boolean)
+  // destroyLoosePieceObjects() {
+  //   console.log('piece resolver')
+  //   return this.pieceService.destroyLoosePieceObjects()
+  // }
 
-  @Authorized()
-  @Mutation(() => Boolean)
-  destroyUserPiece(@Arg('input') input: GetPieceInput, @Ctx() context: Context) {
-    const user = context.user!
-    return this.pieceService.destroyUserPiece({ ...input, owner: user._id })
-  }
+  // @Authorized()
+  // @Mutation(() => Boolean)
+  // destroyUserPiece(@Arg('input') input: GetPieceInput, @Ctx() context: Context) {
+  //   const user = context.user!
+  //   return this.pieceService.destroyUserPiece({ ...input, owner: user._id })
+  // }
 }

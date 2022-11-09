@@ -1,24 +1,14 @@
 import { getModelForClass, modelOptions, index, Prop, prop, Ref } from '@typegoose/typegoose'
 import { Field, InputType, ObjectType, ID, Int } from 'type-graphql'
 import { User } from './user.schema'
-import Context from '../types/context'
+import { MyinTObjectOwner } from './myintobject.schema'
 
 @ObjectType({ description: 'The tag model' })
 @modelOptions({ options: { allowMixed: 0 } })
-export class Tag {
-  @Field((type) => ID)
-  _id: string
-
-  @Field(() => User) // Remove if field not publicly accessible?
-  @prop({ required: true, ref: () => User })
-  owner: Ref<User> // This is a reference to a user
-
+export class Tag extends MyinTObjectOwner {
   @Field(() => String)
   @prop({ required: true })
   title: string
-
-  @prop({ required: false })
-  deleted?: Date
 }
 
 export const TagModel = getModelForClass<typeof Tag>(Tag, { schemaOptions: { timestamps: { createdAt: true } } })
