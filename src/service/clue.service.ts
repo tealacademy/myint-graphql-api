@@ -1,5 +1,5 @@
 import { GetClueInput, ClueModel, CreateClueInput, IdeaModel, CreateIdeaInput } from '../schema/clue.schema'
-import EdgeService from '../service/edge.service'
+// import EdgeService from '../service/edge.service'
 import TagService from './tag.service'
 import { User } from '../schema/user.schema'
 import { FRAME_EDGES } from '../types/data'
@@ -19,12 +19,12 @@ class ClueService {
     const clue = await ClueModel.create({ ...input, ideas: newIdeas })
 
     // create edges
-    const edgeService = new EdgeService()
-    if (newIdeas) {
-      for (const idea of newIdeas) {
-        const edge = edgeService.createEdge({ ...input, nodeA: clue._id, nodeB: (await idea)._id, label: FRAME_EDGES.CLUE_IDEA })
-      }
-    }
+    // const edgeService = new EdgeService()
+    // if (newIdeas) {
+    //   for (const idea of newIdeas) {
+    //     const edge = edgeService.createEdge({ ...input, nodeA: clue._id, nodeB: (await idea)._id, label: FRAME_EDGES.CLUE_IDEA })
+    //   }
+    // }
 
     return clue
   }

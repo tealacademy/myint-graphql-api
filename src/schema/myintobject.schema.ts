@@ -11,9 +11,9 @@ export class MyinTObject {
   _id: string
 
   // This is a reference to the user who created the object. Can never be another
-  @Field(() => User)
-  @prop({ required: true, ref: () => User })
-  owner: Ref<User>
+  // @Field(() => User)
+  // @prop({ required: true, ref: () => User })
+  // owner: Ref<User>
 
   @prop({ required: false })
   deleted?: Date
@@ -22,7 +22,10 @@ export class MyinTObject {
 @ObjectType({ description: 'The basic myintobject model' })
 export class MyinTObjectOwner extends MyinTObject {
   // This is a reference to the user who created the object. Can never be another
-  @Field(() => User)
-  @prop({ required: true, ref: () => User })
+  @Field(() => User, { nullable: false })
+  //@prop({ required: true, ref: () => User })
+  // The 'Nested'(as string) form is useful to avoid unintuitive errors due to circular
+  // dependencies, such as Option "ref" for "${name}.${key}" is null/undefined! [E005].
+  @prop({ required: true, ref: 'User' })
   owner: Ref<User>
 }

@@ -32,7 +32,7 @@ export class Group extends MyinTObjectOwner {
 @modelOptions({ options: { allowMixed: 0 } })
 export class UserGroup extends Group {
   @Field(() => [User])
-  @prop({ required: true, default: [], ref: () => User })
+  @prop({ required: true, default: [], ref: 'User' })
   users: Ref<User>[]
 
   @Field(() => [Role])

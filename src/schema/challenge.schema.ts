@@ -36,7 +36,7 @@ export class Challenge extends MyinTObjectOwner {
   // Also edges
   // Actual Frames also stored here for performance
   @Field(() => [Frame]) // a challenge has 0..n frames
-  @prop({ required: true, default: [], ref: () => Frame })
+  @prop({ required: true, default: [], ref: 'Frame' })
   frames: Ref<Frame>[]
 
   @Field(() => String)
@@ -50,7 +50,7 @@ export class ChallengeFrameEdge extends Edge {
   challenge: Ref<Challenge>
 
   @Field(() => Frame)
-  @prop({ required: true, ref: () => Frame })
+  @prop({ required: true, ref: 'Frame' })
   frame: Ref<Frame>
 
   @Field(() => Number)

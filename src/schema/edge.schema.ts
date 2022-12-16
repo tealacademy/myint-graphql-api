@@ -1,4 +1,4 @@
-import { prop, Ref } from '@typegoose/typegoose'
+import { prop, modelOptions } from '@typegoose/typegoose'
 import { Field, ObjectType, ID } from 'type-graphql'
 import { MyinTObjectOwner } from './myintobject.schema'
 import { Changeset } from './../utils/json-diff-ts/jsonDiff'
@@ -14,9 +14,10 @@ export class Edge extends MyinTObjectOwner {
 }
 
 @ObjectType({ description: 'The edge for changes on an object' })
+@modelOptions({ options: { allowMixed: 0 } })
 export class VersionEdge extends Edge {
-  // delta of the change
-  @Field(() => String)
+  // delta of the change. Typegoose has only String as Type, but we want de delta of type Changeset (will be json-string)
+  @Field((type) => String)
   @prop({ required: false })
   delta?: Changeset
 

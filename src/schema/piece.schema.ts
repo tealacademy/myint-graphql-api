@@ -39,11 +39,13 @@ export class Piece extends MyinTObjectOwner {
   theme?: Ref<Theme>
 
   // number of updates on this piece
+  // API creates new versionnumber
   @Field((type) => Int)
   @prop({ required: true })
   updateVersion: number
 
   // ! th copy of piece
+  // API creates versionnumber
   @Field((type) => Int)
   @prop({ required: true, immutable: true })
   pieceVersion: number
@@ -145,13 +147,11 @@ export class PieceGroupEdge extends Edge {
 export const PieceModel = getModelForClass<typeof Piece>(Piece, { schemaOptions: { timestamps: { createdAt: true, updatedAt: true } } })
 export const PieceVersionEdgeModel = getModelForClass<typeof PieceVersionEdge>(PieceVersionEdge, { schemaOptions: { timestamps: { createdAt: true } } })
 
+/** a new piece is always created by the user who calls the API */
 @InputType({ description: 'The type used for creating a new piece' })
 export class CreatePieceInput {
   @Field(() => String)
   title: string
-
-  @Field(() => String)
-  owner: string
 
   @Field(() => String)
   deepMyinT?: string
@@ -162,12 +162,9 @@ export class CreatePieceInput {
   @Field(() => [CreateSlideInput])
   slides: CreateSlideInput[]
 
+  // Ref (ID) to a theme
   @Field(() => String)
   theme?: string
-
-  // input?
-  // @Field(() => Number)
-  // version: number
 
   @Field(() => Boolean)
   autoPlay?: boolean
@@ -186,6 +183,9 @@ export class ListPieceInput {
 export class GetPieceInput {
   @Field(() => String)
   Id: string
+
+  @Field(() => String)
+  owner?: string
 }
 
 @InputType({ description: 'The type used for updating a single piece' })
@@ -196,6 +196,8 @@ export class UpdatePieceInput {
   @Field(() => String)
   delta: Changeset
 
+  // give version on client-side to verify if it is the latest version
+  // that is being update
   @Field(() => Number)
   currentVersion: number
 }

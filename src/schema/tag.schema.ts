@@ -20,9 +20,6 @@ export class CreateTagInput implements Partial<Tag> {
 
   @Field(() => String)
   title: string
-
-  @Field(() => String)
-  owner: string
 }
 
 @InputType({ description: 'The type used for creating a new tag' })

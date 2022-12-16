@@ -20,7 +20,7 @@ export class MyinTSet extends MyinTObjectOwner {
   pieces: Ref<Piece>[]
 
   @Field(() => [String], { nullable: true }) // a myintset has 0..n frames
-  @prop({ required: false, default: [], ref: () => Frame })
+  @prop({ required: false, default: [], ref: 'Frame' })
   frames: Ref<Frame>[]
 }
 

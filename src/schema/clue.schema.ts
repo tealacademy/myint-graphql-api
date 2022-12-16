@@ -61,6 +61,7 @@ export class ObjReferenceList {
  * Every idea is unique so is a nested document
  */
 @ObjectType({ description: 'The idea-object model' })
+@modelOptions({ options: { allowMixed: 0 } })
 class Idea extends MyinTObjectOwner {
   // Owner is a reference to the participant who added the Idea
 
