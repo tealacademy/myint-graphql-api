@@ -10,16 +10,11 @@ export class MyinTObject {
   @Field((type) => ID)
   _id: string
 
-  // This is a reference to the user who created the object. Can never be another
-  // @Field(() => User)
-  // @prop({ required: true, ref: () => User })
-  // owner: Ref<User>
-
   @prop({ required: false })
   deleted?: Date
 }
 
-@ObjectType({ description: 'The basic myintobject model' })
+@ObjectType({ description: 'Basic myintobject model adding the owner of the object' })
 export class MyinTObjectOwner extends MyinTObject {
   // This is a reference to the user who created the object. Can never be another
   @Field(() => User, { nullable: false })

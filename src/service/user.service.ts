@@ -152,7 +152,7 @@ class UserService {
     const token = signJwt(omit(user.toJSON(), ['passWord', 'active']))
 
     const dataString = JSON.stringify(`{accessToken: ${token}}`)
-    const newLog = new LogService().createLog({ action: LOG_ACTIONS.LOGIN_USER, data: dataString }, user, LOG_EDGES.USER_LOG_ITEM)
+    // const newLog = new LogService().createLog({ action: LOG_ACTIONS.LOGIN_USER, data: dataString }, user, LOG_EDGES.USER_LOG_ITEM)
 
     // return the jwt-token
 

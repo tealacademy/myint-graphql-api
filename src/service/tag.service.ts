@@ -29,6 +29,12 @@ class TagService {
     return tags
   }
 
+  async findTags() {
+    const tags = await TagModel.find().lean()
+
+    return tags
+  }
+
   async findSingleTag(input: GetTagInput & { owner: User['_id'] }) {
     // must be of owner, other searchfields optional
     return TagModel.findOne({ ...input }).lean()

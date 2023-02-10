@@ -27,16 +27,16 @@ export default class MessageResolver {
   }
 
   // https://typegraphql.com/docs/subscriptions.html
-  @Subscription({
-    topics: SUBSCRIPTIONS.MESSAGES,
-  })
-  newMessageSubscription(
-    @Root() message: IMessage,
-    // @Args() args: NewNotificationsArgs,
-    @Ctx() context: Context
-  ) {
-    const user = context.user!
+  // @Subscription({
+  //   topics: SUBSCRIPTIONS.MESSAGES,
+  // })
+  // newMessageSubscription(
+  //   @Root() message: IMessage,
+  //   // @Args() args: NewNotificationsArgs,
+  //   @Ctx() context: Context
+  // ) {
+  //   const user = context.user!
 
-    return this.messageService.newMessage({ ...message, user: user._id })
-  }
+  //   return this.messageService.newMessage({ ...message, user: user._id })
+  // }
 }

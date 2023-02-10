@@ -9,7 +9,7 @@ config options:
 */
 
 // Import AWS SDK clients and AWS commands.
-import { PutObjectCommand, CreateBucketCommand } from '@aws-sdk/client-s3'
+import { PutObjectCommand, CreateBucketCommand, GetObjectCommand } from '@aws-sdk/client-s3'
 import { s3Client } from './s3.client'
 
 // config parameters
@@ -19,7 +19,7 @@ import { s3Client } from './s3.client'
 //  Body: "BODY", // content of the object. Eg.:'Hello world!".
 // }
 
-export default class Uploader {
+export default class S3loader {
   public upload = async (bucket: string, userId: string, filekey: string, file: any) => {
     // try to create the S3 bucket.
     try {
@@ -39,6 +39,21 @@ export default class Uploader {
       return results
     } catch (error) {
       console.log('Error', error)
+    }
+  }
+
+  public download = async (bucket: string, userId: string, filekey: string) => {
+    try {
+      // Get the object} from the Amazon S3 bucket. It is returned as a ReadableStream.
+      const data = await s3Client.send(new GetObjectCommand({ Bucket: bucket, Key: filekey }))
+
+      // Convert the ReadableStream to a string.
+      console.log('Successfully downloaded object ' + filekey)
+
+      const body = data.Body ? await data.Body.transformToString() : ''
+      return body
+    } catch (err) {
+      console.log('Error', err)
     }
   }
 }

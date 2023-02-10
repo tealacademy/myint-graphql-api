@@ -24,6 +24,12 @@ export default class TagResolver {
     return this.tagService.findUserTags(user._id)
   }
 
+  @Query(() => [Tag])
+  getTestTags() {
+    console.log('GetTestTags')
+    return this.tagService.findTags()
+  }
+
   // @Authorized()
   // @Query(() => Tag)
   // getSingleTag(@Arg('input') input: GetTagInput, @Ctx() context: Context) {

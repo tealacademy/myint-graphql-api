@@ -18,7 +18,7 @@ class PieceService {
     // Keys are set in UI
     const piece = await PieceModel.create({ ...input, updateVersion, pieceVersion })
 
-    // Edge between piece and owner
+    // Edge between piece and delta
     const edge = await PieceVersionEdgeModel.create({ ...input, nodeA: piece._id, nodeB: input.owner, label: PIECE_EDGES.PIECE_CREATE })
 
     return piece

@@ -69,7 +69,7 @@ export class User extends MyinTObject {
   profile: Ref<Profile>
 }
 
-@ObjectType({ description: 'The edge between user and group' })
+@ObjectType({ description: 'Edge: to which group(s) belongs a user' })
 export class UserGroupEdge extends Edge {
   @Field(() => User)
   @prop({ required: true, ref: () => User })

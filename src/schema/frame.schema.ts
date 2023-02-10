@@ -5,6 +5,7 @@ import { Edge, VersionEdge } from './edge.schema'
 import { ListChallengeInput } from './challenge.schema'
 import { Clue, CreateClueInput } from './clue.schema'
 import { Field, InputType, ObjectType, ID, Int, createUnionType } from 'type-graphql'
+import JSONTransport from 'nodemailer/lib/json-transport'
 
 @ObjectType({ description: 'The frame model' })
 @modelOptions({ options: { allowMixed: 0 } })

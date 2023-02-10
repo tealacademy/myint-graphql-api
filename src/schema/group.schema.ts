@@ -54,9 +54,11 @@ export class UserGroupVersionEdge extends VersionEdge {
   participantGroupNew: Ref<UserGroup>
 }
 
-/** The participants-group has two userGroups with each only 1 role */
-// for chat-group: in database-init we need to create default-roles for these two groups
-// for frames: we need to investigate which roles we need
+/**
+ * The participants-group has two userGroups with each only 1 role
+ * for chat-group: in database-init we need to create default-roles for these two groups
+ * for frames: we need to investigate which roles we need
+ */
 @ObjectType({ description: 'The participants group model' })
 @modelOptions({ options: { allowMixed: 0 } })
 export class ParticipantGroup extends Group {

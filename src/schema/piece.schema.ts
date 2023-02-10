@@ -1,19 +1,18 @@
-import { getModelForClass, index, isRefType, isRefTypeArray, modelOptions, Prop, prop, Ref, Severity } from '@typegoose/typegoose'
-import { Field, InputType, ObjectType, ID, Int } from 'type-graphql'
+import { getModelForClass, modelOptions, prop, Ref } from '@typegoose/typegoose'
+import { Field, InputType, ObjectType, Int } from 'type-graphql'
 import { customAlphabet } from 'nanoid'
-import { User } from './user.schema'
 import { MyinTObjectOwner } from './myintobject.schema'
 import { Edge, VersionEdge } from './edge.schema'
-// import { Slide, CreateSlideInput } from './slide.schema'
 import { Theme } from './theme.schema'
+import { File } from './file.schema'
 import { UserGroup } from './group.schema'
 import { Tag, CreateTagInput } from './tag.schema'
 import { Changeset } from './../utils/json-diff-ts/jsonDiff'
-import { IsNumber, MaxLength, Min, MinLength, IsUrl, IsArray, ValidateNested, IsObject } from 'class-validator'
-import Context from './../types/context'
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz123456789', 10)
 
+/**
+ * The newest version of a Piece of MyinT */
 @ObjectType({ description: 'The piece model' })
 // @index({ index: 1 })
 @modelOptions({ options: { allowMixed: 0 } }) // https://typegoose.github.io/typegoose/docs/api/decorators/model-options/#allowmixed
@@ -59,15 +58,32 @@ export class Piece extends MyinTObjectOwner {
   updateWithOriginal: boolean
 }
 
+/**
+ * A slide is unique so there is no seperate doc for slides
+ * it shows 1-n slideobjects on their x,y position
+ *
+ * slideobjects are:
+ * - text
+ * - extern file (via url)
+ * - intern file (via s3)
+ */
 @ObjectType({ description: 'The slide model' })
 // @modelOptions({ options: { allowMixed: 0 } })
 export class Slide {
   @Field(() => String)
   key: string
 
-  @Field(() => [SlideObject], { nullable: true })
+  @Field(() => [SlideText], { nullable: true })
   @prop({ required: false })
-  slideObjects?: SlideObject[]
+  slideTexts?: SlideText[]
+
+  @Field(() => [SlideLink], { nullable: true })
+  @prop({ required: false })
+  slideLinks?: SlideLink[]
+
+  @Field(() => [SlideFile], { nullable: true })
+  @prop({ required: false })
+  slideFiles?: SlideFile[]
 
   @Field(() => Boolean, { nullable: true })
   @prop({ required: false, default: true })
@@ -77,46 +93,73 @@ export class Slide {
   deleted?: Date
 }
 
+/**
+ * A slideobject has a x,y-position and can be made invisible
+ */
 @ObjectType({ description: 'The slide-object model' })
 class SlideObject {
   @Field(() => String)
   key: string
 
-  // In case of kind, the field data contains:
-  // 1. text: textline
-  // 2. picture: location
-  // 3. url: url
-  // 4. video: location
-  @Field(() => String)
+  @Field(() => Int, { nullable: true })
   @prop({ required: true })
-  kind: string
-
-  // 1: text
-  // 2: png, jpg etc
-  // 3: http, ftp
-  // 4: youtube, vimeo, file etc.
-  @Field(() => String)
-  @prop({ required: true })
-  kindType: string
-
-  @Field(() => String, { nullable: true })
-  @prop({ required: false })
-  data?: string
+  xPos: number
 
   @Field(() => Int, { nullable: true })
-  @prop({ required: false })
-  xPos?: number
-
-  @Field(() => Int, { nullable: true })
-  @prop({ required: false })
-  yPos?: number
+  @prop({ required: true })
+  yPos: number
 
   @Field(() => Boolean)
-  @prop({ required: false, default: true })
-  show?: boolean
+  @prop({ default: true })
+  show: boolean
 }
 
-@ObjectType({ description: 'The edge for changes on a clue' })
+/**
+ * Slidetext is just a line of text.
+ * With Theme you can change visuals
+ * Maybe we need some markup here
+ */
+@ObjectType({ description: 'The slide-object-text model' })
+class SlideText extends SlideObject {
+  @Field(() => String)
+  @prop({ required: true })
+  text: string
+}
+
+/**
+ * SlideLink points to an external file.
+ * Does Url need to be a seperate document?
+ */
+@ObjectType({ description: 'The slide-object-link model' })
+class SlideLink extends SlideObject {
+  // URL
+  @Field(() => String)
+  @prop({ required: true })
+  url: string
+
+  // youtube, vimeo, pdf, word etc. (to determine necessary viewer)
+  @Field(() => String)
+  @prop({ required: true })
+  type: string
+}
+
+/**
+ * SlideFile points to an internal file that is stored in own folder (S3-bucket)
+ * File is seperate document in mongoDB because it is also index on our folder (S3-bucket)
+ */
+@ObjectType({ description: 'The slide-object-file model' })
+class SlideFile extends SlideObject {
+  @Field(() => File)
+  @prop({ required: true, ref: () => File })
+  file: Ref<File>
+}
+
+/**
+ * PieceVersionEdge stores relation between old and new version of a Piece
+ * It contains a delta of the two pieces so you can create the one Piece
+ * with the other Piece. (We always store the newest version as a complete document of Piece)
+ */
+@ObjectType({ description: 'Edge: changes on a piece' })
 @modelOptions({ options: { allowMixed: 0 } })
 export class PieceVersionEdge extends VersionEdge {
   // Original piece
@@ -124,13 +167,17 @@ export class PieceVersionEdge extends VersionEdge {
   @prop({ required: true, ref: () => Piece })
   oldPiece: Ref<Piece>
 
-  // Copy or original piece
+  // Copy of Piece or original piece
   @Field(() => Piece)
   @prop({ required: true, ref: () => Piece })
   newPiece: Ref<Piece>
 }
 
-@ObjectType({ description: 'The edge for changes on a clue' })
+/**
+ * PieceGroupEdge stores relation between Pieces and groups who can
+ * use this Piece. Roles (like editor, viewer etc) are stored in UserGroup
+ */
+@ObjectType({ description: 'Edge: which group(s) has the right to use a piece' })
 @modelOptions({ options: { allowMixed: 0 } })
 export class PieceGroupEdge extends Edge {
   // Original piece
@@ -146,6 +193,7 @@ export class PieceGroupEdge extends Edge {
 
 export const PieceModel = getModelForClass<typeof Piece>(Piece, { schemaOptions: { timestamps: { createdAt: true, updatedAt: true } } })
 export const PieceVersionEdgeModel = getModelForClass<typeof PieceVersionEdge>(PieceVersionEdge, { schemaOptions: { timestamps: { createdAt: true } } })
+export const PieceGroupEdgeModel = getModelForClass<typeof PieceGroupEdge>(PieceGroupEdge, { schemaOptions: { timestamps: { createdAt: true } } })
 
 /** a new piece is always created by the user who calls the API */
 @InputType({ description: 'The type used for creating a new piece' })
@@ -219,23 +267,14 @@ export class ListSlideObjectInput implements Partial<SlideObject> {
   @Field(() => String)
   key: string
 
-  @Field(() => String)
-  kind: string
-
-  @Field(() => String)
-  kindType: string
-
-  @Field(() => String, { nullable: true })
-  data?: string
+  @Field(() => Int, { nullable: true })
+  xPos: number
 
   @Field(() => Int, { nullable: true })
-  xPos?: number
-
-  @Field(() => Int, { nullable: true })
-  yPos?: number
+  yPos: number
 
   @Field(() => Boolean)
-  show?: boolean
+  show: boolean
 }
 
 @InputType({ description: 'The type used for getting a slide' })

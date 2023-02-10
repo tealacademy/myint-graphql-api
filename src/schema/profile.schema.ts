@@ -38,7 +38,7 @@ export class Profile extends MyinTObject {
   // users: Ref<User>[]
 }
 
-@ObjectType({ description: 'The edge between profile and user' })
+@ObjectType({ description: 'Edge: to which user(s) belongs a profile' })
 export class ProfileUserEdge extends Edge {
   @Field(() => Profile)
   @prop({ required: true, ref: () => Profile })
