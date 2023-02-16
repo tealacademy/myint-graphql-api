@@ -1,16 +1,19 @@
-// packages
+// Packages
 import dotEnv from 'dotenv'
-dotEnv.config() // Loads .env file contents into `process.env`. Example: 'KEY=value' becomes { parsed: { KEY: 'value' } }
+// Loads .env file contents into `process.env`. Example: 'KEY=value' becomes { parsed: { KEY: 'value' } }
+dotEnv.config()
 
 import express from 'express' // Good introduction: https://www.youtube.com/watch?v=SccSCuHhOw0
 import { buildSchema } from 'type-graphql' // https://typegraphql.com/
+
+// Takes config/default.ts to fill default environment-variables. Overwrites and adds from file named as value in NODE_ENV (in .env)
+// If no NODE_ENV set, 'development', is default environment
 import config from 'config' // https://www.npmjs.com/package/config
-import cookieParser from 'cookie-parser'
 import { ApolloServer } from 'apollo-server-express' // integration library for Apollo and express.js
 import { graphqlUploadExpress } from 'graphql-upload-minimal' // express.js-middleware to upload files with graphQL
 import { ApolloServerPluginLandingPageGraphQLPlayground, ApolloServerPluginLandingPageProductionDefault } from 'apollo-server-core'
 
-// modules
+// Modules
 import { resolvers } from './resolvers'
 import { connectToDatabase } from './utils/database'
 import { verifyJwt } from './utils/jwt'
@@ -47,9 +50,7 @@ async function bootstrap() {
 
   // graphqlUploadExpress is express.js middleware. You must put it before the main GraphQL sever middleware.
   // Also, make sure there is no other Express.js middleware which parses multipart/form-data HTTP requests before the graphqlUploadExpress middleware!
-  // cookieParser: Parse Cookie header and populate req.cookies with an object keyed by the cookie names.
-  //app.use(cookieParser())
-  app.use(graphqlUploadExpress(), cookieParser())
+  app.use(graphqlUploadExpress())
 
   // Create the apollo server.
   // The GraphQLSchema should be named 'schema'
@@ -72,14 +73,16 @@ async function bootstrap() {
       // console.log(context)
       return context
     },
-    // Use the PlayGround in DEV mode
+    // Use the PlayGround in DEV mode (at serverport)
+    // The ApolloServerPluginLandingPageProductionDefault shows a minimalist landing page (at serverport): https://www.apollographql.com/docs/apollo-server/api/plugin/landing-pages/#default-production-landing-page
     plugins: [process.env.NODE_ENV === 'production' ? ApolloServerPluginLandingPageProductionDefault() : ApolloServerPluginLandingPageGraphQLPlayground()],
-    // plugins: [ApolloServerPluginLandingPageProductionDefault()],
   })
 
   // Start the apollo-server and wait till it has started
   await server.start()
 
+  // applyMiddleware applies Apollo Server as middleware to the HTTP framework of a Node.js middleware library, such as hapi or express.
+  // You call this method instead of listen if you're using a middleware integration, such as apollo-server-express. You should call await server.start() before calling this method.
   // What applyMiddleware actually does is only add middleware to the path (default /graphql router), so it’s not applied to the whole app
   server.applyMiddleware({ app })
 

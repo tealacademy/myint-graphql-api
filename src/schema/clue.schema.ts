@@ -48,6 +48,7 @@ export class Clue extends MyinTObjectOwner {
 @ObjectType({ description: 'The objectReferences model (in general references to pieces or frames)' })
 @modelOptions({ options: { allowMixed: 0 } })
 export class ObjReferenceList {
+  // https://typegraphql.com/docs/unions.html
   @Field(() => String)
   @prop({ required: true, items: ['Piece', 'Frame'] })
   type!: string
@@ -132,7 +133,6 @@ export class CreateClueInput {
   @Field(() => String, { nullable: true })
   solution?: string
 
-  // https://typegraphql.com/docs/unions.html
   @Field(() => [ObjReferenceListInput], { nullable: true })
   objectList?: ObjReferenceListInput[]
 
