@@ -1,0 +1,17 @@
+Hoe werkt versioning?
+
+Een document (entity in noSQL-DB) heeftaltijd een laatste versie. Dit is de meest recente instantie van het object. D
+Deze versie zit compleet in de database en kan dus makkelijk en snel uit de database gehaald worden naar een client gestuurd worden.
+
+Als een gebruiker een wijziging maakt op een object dan wordt aan de client-side een delta gemaakt van het oude object en de nieuwe versie.
+
+De delta wordt naar de server gestuurd en daar wordt het nieuwe gevormd uit de delta en het oude object. 
+Het oude object wordt geupdate tot het nieuwe object met het nieuwe versienummer (oude versienummer wordt 1 verhoogd)
+
+Er wordt een VersionEdge aangemaakt waarin de ID van het object wordt opgeslagen, de delta en het nieuwe versienummer.
+De Edge heeft twee ID's. In dit geval zijn dat dezelfde ID's omdat er geen fysiek nieuw object is gemaakt.
+
+Dit kan namelijk wel. In het UI kun je aangeven dat een Object 'af' is. Zeg maar een productie-release. 
+Op dat moment wordt er een nieuw Object aangemaakt in de database en verbindt de VersionEdge dus twee verschillende ID's.
+Het oude object wordt dan ook in zijn geheel bewaard waardoor je redelijk snel naar oudere versies kunt gaan
+

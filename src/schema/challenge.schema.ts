@@ -66,7 +66,7 @@ export class ChallengeMyinTSetEdge extends Edge {
 
   @Field(() => MyinTSet)
   @prop({ required: true, ref: () => MyinTSet })
-  frame: Ref<Frame>
+  frame: Ref<MyinTSet>
 }
 
 @ObjectType({ description: 'The edge for changes on a challenge' })
