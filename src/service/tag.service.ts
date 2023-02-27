@@ -29,10 +29,21 @@ class TagService {
     return tags
   }
 
-  async findTags() {
-    const tags = await TagModel.find().lean()
+  async findTags(tags: Tag[], userId: string) {
+    const tags2 = await TagModel.find().lean()
 
-    return tags
+    return tags2
+  }
+
+  async checkTags(tags: Tag[], userId: string) {
+    let exist = true
+
+    for (const tag of tags) {
+      const foundTag = await TagModel.findOne({ _id: tag._id, owner: userId }).lean()
+      exist = exist && foundTag !== null
+    }
+
+    return exist
   }
 
   async findSingleTag(input: GetTagInput & { owner: User['_id'] }) {

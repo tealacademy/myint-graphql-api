@@ -1,61 +1,147 @@
-import { CreatePieceInput, GetPieceInput, UpdatePieceInput, PieceModel, PieceVersionEdgeModel } from '../schema/piece.schema'
+import { Piece, CreatePieceInput, GetPieceInput, UpdatePieceInput, ReleasePieceInput, PieceModel, PieceVersionEdgeModel } from '../schema/piece.schema'
 import TagService from '../service/tag.service'
 import { User } from '../schema/user.schema'
-import { PIECE_EDGES } from '../types/data'
+import { PIECE_EDGES, ERROR_MESSAGES } from '../types/data'
 import { applyChangeset } from '../utils/json-diff-ts/jsonDiff'
 
 class PieceService {
-  /** Create complete document with filled 1:n relations for tags, slides
+  /** Create complete document with filled tags, slides
+   * Tags must exist in db
    */
-  async createPiece(input: CreatePieceInput & { owner: User['_id'] }) {
-    console.log('create piece')
+  async createPiece(input: CreatePieceInput & { owner: User['_id'] }, pieceVersion: number) {
+    console.log('Service: createPiece')
+
+    // New piece is never updated before
     const updateVersion = 0
-    const pieceVersion = 1
 
-    // Tags are created in UI and can only be added to piece if they exist in model
+    try {
+      // check if tags in piece exist. They are no references to existing Tags in Model so we need to check ourselves
+      const { tags } = input
 
-    // No need to create slide-objects. Are nested documents.
-    // Keys are set in UI
-    const piece = await PieceModel.create({ ...input, updateVersion, pieceVersion })
+      if (tags !== undefined) {
+        const tagService = new TagService()
+        if (!tagService.checkTags(tags, input.owner)) throw new Error('piece.service.createPiece: ' + ERROR_MESSAGES.PIECE_TAGS + ': ' + input.tags)
+      }
 
-    // Edge between piece and delta
-    const edge = await PieceVersionEdgeModel.create({ ...input, nodeA: piece._id, nodeB: input.owner, label: PIECE_EDGES.PIECE_CREATE })
+      const piece = await PieceModel.create({ ...input, updateVersion, pieceVersion })
 
-    return piece
+      return piece
+    } catch (error) {
+      console.log(error)
+      throw new Error('piece.service.createPiece: ' + ERROR_MESSAGES.PIECE_CREATE + ': ' + input.title)
+    }
   }
 
-  async updatePiece(input: UpdatePieceInput & { owner: User['_id'] }) {
-    console.log('update piece')
-    const piece = await PieceModel.findOne({ _id: input.Id, owner: input.owner }).lean()
+  async copyPiece(piece: Piece, owner: User['_id'], pieceVersion: number) {
+    console.log('Service: copyPiece')
 
-    if (!piece) return
+    // New piece is never updated before
+    const updateVersion = 0
 
-    // If piece is not updated by some other client
-    if (piece.updateVersion === input.currentVersion) {
-      // get latest versionEdge for versionnumber and raise it
-      const edgeVersion = piece.updateVersion + 1
+    try {
+      // ! Kan dit of nodig? Door destructuring het id eruit halen. Krijgt het nieuwe Piece een uniek ID?
+      const { _id, ...clonePiece } = piece
+      const copyPiece = await PieceModel.create({ ...clonePiece, owner, updateVersion, pieceVersion })
 
-      // update piece-document
-      applyChangeset(piece, input.delta)
+      // TODO: if new owner we need new tag(s) for this piece because they are personal
 
-      // Edge between piece and update
-      const edge = await PieceVersionEdgeModel.create({
-        ...input,
-        oldPiece: piece._id,
-        newPiece: piece._id,
-        delta: input.delta,
-        version: edgeVersion,
-        owner: input.owner,
-        label: PIECE_EDGES.PIECE_UPDATE,
-      })
-
-      // ! check onderstaande
-      // Return updated latest version from database
-      return PieceModel.updateOne({ ...piece, updateVersion: edgeVersion }, { $set: { updatedAt: Date.now() } }).lean()
+      return copyPiece
+    } catch (error) {
+      console.log(error)
+      throw new Error('piece.service.copyPiece: ' + ERROR_MESSAGES.PIECE_COPY + ': ' + piece._id)
     }
+  }
 
-    // Return (not updated by this call) latest version from database
-    return piece
+  /**
+   * Tags are created in UI and can only be added to piece if they are created through API and exist in model
+   * @param input
+   * @returns
+   */
+  async updatePiece(input: UpdatePieceInput & { owner: User['_id'] }) {
+    console.log('Service: updatePiece')
+
+    try {
+      // Find Piece to update
+      const piece = await PieceModel.findOne({ _id: input.Id, owner: input.owner }).lean()
+
+      // If piece does not exist or is not updated by some other client
+      if (piece && piece.updateVersion === input.currentVersion) {
+        // get latest versionEdge for versionnumber and raise it
+        const edgeVersion = piece.updateVersion + 1
+
+        // update piece-document
+        applyChangeset(piece, input.delta)
+
+        // Edge between piece and updated piece (update in delta)
+        const edge = await PieceVersionEdgeModel.create({
+          ...input,
+          oldPiece: piece._id,
+          newPiece: piece._id,
+          delta: input.delta,
+          version: edgeVersion,
+          owner: input.owner,
+          label: PIECE_EDGES.PIECE_VERSION_UPDATE,
+        })
+
+        // ! test onderstaande
+        // Return updated latest version from database
+        return PieceModel.updateOne({ ...piece, updateVersion: edgeVersion }, { $set: { updatedAt: Date.now() } }).lean()
+      } else throw new Error('piece.service.updatePiece: ' + ERROR_MESSAGES.PIECE_FIND + ': ' + input.Id)
+
+      // Return (not updated by this call) latest version from database
+      // otherwise null
+      return piece
+    } catch (error) {
+      console.log(error)
+      throw new Error('piece.service.updatePiece: ' + ERROR_MESSAGES.PIECE_UPDATE + ': ' + input.Id)
+    }
+  }
+
+  /**
+   * Tags are created in UI and can only be added to piece if they are created through API and exist in model
+   * @param input
+   * @returns
+   */
+  async releasePiece(input: ReleasePieceInput & { owner: User['_id'] }) {
+    console.log('Service: releaseePiece')
+
+    // initialise new Piece
+    let newPiece = null
+
+    try {
+      // if PieceId does not exist, we need to create a new piece
+      const piece = await PieceModel.findOne({ _id: input.Id, owner: input.owner }).lean()
+
+      // If piece is not updated by some other client
+      if (piece && piece.updateVersion === input.currentVersion) {
+        // New piece has updateVersion = 0
+        const edgeVersion = 0
+
+        // update piece-document
+        applyChangeset(piece, input.delta)
+
+        // Make copy of this piece
+        newPiece = await this.copyPiece(piece, input.owner, 1)
+
+        // Edge between piece and updated piece (update in delta)
+        const edge = await PieceVersionEdgeModel.create({
+          ...input,
+          oldPiece: piece._id,
+          newPiece: newPiece._id,
+          delta: input.delta,
+          version: newPiece.updateVersion,
+          owner: input.owner,
+          label: PIECE_EDGES.PIECE_VERSION_RELEASE,
+        })
+      } else throw new Error('piece.service.releasePiece: ' + ERROR_MESSAGES.PIECE_FIND + ': ' + input.Id)
+
+      // Return (not updated by this call) latest version from database
+      // otherwise null
+      return newPiece
+    } catch (error) {
+      console.log(error)
+      throw new Error('piece.service.releasePiece: ' + ERROR_MESSAGES.PIECE_RELEASE + ': ' + input.Id)
+    }
   }
 
   async findUserPieces(owner: User['_id']) {

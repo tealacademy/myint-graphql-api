@@ -21,18 +21,23 @@ export class Piece extends MyinTObjectOwner {
   @prop({ required: true, defaultValue: '' })
   title: string
 
+  @Field(() => Date, { nullable: true })
+  @prop({ required: true })
+  createdAtClient: Date
+
   @Field(() => String, { nullable: true })
   @prop({ required: false })
   deepMyinT?: string
 
   @Field(() => [Tag])
-  @prop({ required: true })
+  @prop({ required: true, defaultValue: [] })
   tags: Tag[]
 
   @Field(() => [Slide])
-  @prop({ required: true })
+  @prop({ required: true, defaultValue: [] })
   slides: Slide[]
 
+  // If no theme set, default theme is used
   @Field(() => Theme, { nullable: true })
   @prop({ required: false, ref: () => Theme })
   theme?: Ref<Theme>
@@ -40,7 +45,7 @@ export class Piece extends MyinTObjectOwner {
   // number of updates on this piece
   // API creates new versionnumber
   @Field((type) => Int)
-  @prop({ required: true })
+  @prop({ required: true, defaultValue: 0 })
   updateVersion: number
 
   // ! th copy of piece
@@ -201,14 +206,17 @@ export class CreatePieceInput {
   @Field(() => String)
   title: string
 
+  @Field(() => Date)
+  createdAtClient: Date
+
   @Field(() => String)
   deepMyinT?: string
 
-  @Field(() => [CreateTagInput])
-  tags: CreateTagInput[]
+  @Field(() => [Tag])
+  tags?: Tag[]
 
   @Field(() => [CreateSlideInput])
-  slides: CreateSlideInput[]
+  slides?: CreateSlideInput[]
 
   // Ref (ID) to a theme
   @Field(() => String)
@@ -218,7 +226,7 @@ export class CreatePieceInput {
   autoPlay?: boolean
 
   @Field(() => Boolean)
-  updateWithOriginal: boolean
+  updateWithOriginal?: boolean
 }
 
 @InputType({ description: 'The type used for adding an existing piece to a list in another object' })
@@ -240,6 +248,23 @@ export class GetPieceInput {
 export class UpdatePieceInput {
   @Field(() => String)
   Id: string
+
+  @Field(() => String)
+  delta: Changeset
+
+  // give version on client-side to verify if it is the latest version
+  // that is being update
+  @Field(() => Number)
+  currentVersion: number
+}
+
+@InputType({ description: 'The type used for updating a single piece' })
+export class ReleasePieceInput {
+  @Field(() => String)
+  Id: string
+
+  @Field(() => Date)
+  createdAtClient: Date
 
   @Field(() => String)
   delta: Changeset

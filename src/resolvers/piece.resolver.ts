@@ -14,7 +14,7 @@ export default class PieceResolver {
   @Mutation(() => Piece)
   createPiece(@Arg('input') input: CreatePieceInput, @Ctx() context: Context) {
     const user = context.user!
-    return this.pieceService.createPiece({ ...input, owner: user._id })
+    return this.pieceService.createPiece({ ...input, owner: user._id }, 1)
   }
 
   @Authorized()

@@ -27,8 +27,8 @@ export enum PIECE_EDGES {
   // PIECE_TAG = 'piece_tag',
   // PIECE_SLIDE = 'piece_slide',
   // PIECE_OWNER = 'piece_owner',
-  PIECE_CREATE = 'piece_create',
-  PIECE_UPDATE = 'piece_update',
+  PIECE_VERSION_RELEASE = 'release',
+  PIECE_VERSION_UPDATE = 'update',
 }
 
 export enum FRAME_EDGES {
@@ -71,6 +71,12 @@ export enum ERROR_MESSAGES {
   EMAIL_CONFIRM_INCORRECT = 'Email or confirm token are incorrect',
   EMAIL_PASSWORD_INCORRECT = 'Invalid email-address or password',
   CONFIRM_EMAIL = 'Please confirm your email-address',
+  PIECE_FIND = 'Cannot find requested Piece',
+  PIECE_UPDATE = 'Cannot update Piece',
+  PIECE_COPY = 'Cannot copy Piece',
+  PIECE_CREATE = 'Cannot create Piece',
+  PIECE_RELEASE = 'Cannot release Piece',
+  PIECE_TAGS = 'New Piece contains unknown tags',
 }
 
 export enum SUBSCRIPTIONS {
