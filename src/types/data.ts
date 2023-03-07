@@ -85,6 +85,7 @@ export enum ERROR_MESSAGES {
   USER_REGISTER = 'Cannot register User',
   USER_PROFILE_MISSING = 'Profile of User is missing',
   USER_PROFILE = 'Profile can not be created for user',
+  USER_LOGIN = 'Unable to login user',
 }
 
 export enum SUBSCRIPTIONS {

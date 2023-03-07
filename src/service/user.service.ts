@@ -180,7 +180,7 @@ class UserService {
 
       return user
     } catch (e) {
-      throw new Error(ERROR_MESSAGES.EMAIL_CONFIRM_INCORRECT)
+      throw new Error('user.service.confirmUser: ' + ERROR_MESSAGES.EMAIL_CONFIRM_INCORRECT)
     }
   }
 
@@ -220,19 +220,19 @@ class UserService {
 
       return token
     } catch (e) {
-      throw new Error(ERROR_MESSAGES.EMAIL_CONFIRM_INCORRECT)
+      throw new Error('user.service.login: ' + ERROR_MESSAGES.USER_LOGIN + ': ' + input.eMail)
     }
   }
 
-  async logout(context: Context) {
-    // not necessary? can be handled on client-side
-    // by throwing out accesstoken
+  // async logout(context: Context) {
+  //   // not necessary? can be handled on client-side
+  //   // by throwing out accesstoken
 
-    if (context.user) {
-      const newLog = new LogService().createLog({ action: LOG_ACTIONS.LOGOUT_USER, data: '' }, context.user, LOG_EDGES.USER_LOG_ITEM)
-    }
-    return null
-  }
+  //   if (context.user) {
+  //     const newLog = new LogService().createLog({ action: LOG_ACTIONS.LOGOUT_USER, data: '' }, context.user, LOG_EDGES.USER_LOG_ITEM)
+  //   }
+  //   return null
+  // }
 
   async userInGroup(userId: String, groupId: String) {
     return true

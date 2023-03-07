@@ -46,6 +46,7 @@ class PieceService {
     }
   }
 
+  /** */
   async copyPiece(piece: Piece, owner: User['_id'], pieceVersion: number) {
     console.log('Service: copyPiece')
 
