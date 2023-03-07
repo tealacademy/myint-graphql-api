@@ -242,6 +242,27 @@ export class GetPieceInput {
 
   @Field(() => String)
   owner?: string
+
+  @Field(() => Number)
+  updateVersion?: number
+
+  @Field(() => Number)
+  pieceVersion?: number
+}
+
+@InputType({ description: 'The type used for getting a single piece' })
+export class GetPieceListInput {
+  @Field(() => String)
+  Id: string
+
+  @Field(() => String)
+  owner?: string
+
+  @Field(() => Number)
+  updateVersion?: number
+
+  @Field(() => Number)
+  pieceVersion?: number
 }
 
 @InputType({ description: 'The type used for updating a single piece' })

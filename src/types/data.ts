@@ -71,12 +71,20 @@ export enum ERROR_MESSAGES {
   EMAIL_CONFIRM_INCORRECT = 'Email or confirm token are incorrect',
   EMAIL_PASSWORD_INCORRECT = 'Invalid email-address or password',
   CONFIRM_EMAIL = 'Please confirm your email-address',
+  NO_OWNER_DEFINED = 'No owner defined',
   PIECE_FIND = 'Cannot find requested Piece',
   PIECE_UPDATE = 'Cannot update Piece',
   PIECE_COPY = 'Cannot copy Piece',
   PIECE_CREATE = 'Cannot create Piece',
   PIECE_RELEASE = 'Cannot release Piece',
   PIECE_TAGS = 'New Piece contains unknown tags',
+  PIECE_QUERY = 'Error in query finding Pieces',
+  PIECE_UPDATEVERSION = 'Error in finding correct update-edge of piece',
+  USER_CREATE = 'Cannot create User',
+  USER_CREATE_ADMIN = 'Cannot create Admin User',
+  USER_REGISTER = 'Cannot register User',
+  USER_PROFILE_MISSING = 'Profile of User is missing',
+  USER_PROFILE = 'Profile can not be created for user',
 }
 
 export enum SUBSCRIPTIONS {

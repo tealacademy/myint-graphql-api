@@ -1,5 +1,6 @@
 import { Arg, Ctx, Authorized, Mutation, Query, Resolver } from 'type-graphql'
 import { CreateUserInput, LoginInput, User } from '../schema/user.schema'
+import { CreateProfileInput, Profile } from '../schema/profile.schema'
 import UserService from '../service/user.service'
 import ProfileService from '../service/profile.service'
 import Context from '../types/context'
@@ -9,12 +10,12 @@ import Context from '../types/context'
 export default class UserResolver {
   constructor(private userService: UserService, private profileService: ProfileService) {
     this.userService = new UserService()
-    this.profileService = new ProfileService()
   }
 
   @Mutation(() => User)
-  registerUser(@Arg('input') input: CreateUserInput) {
-    return this.userService.registerUser(input)
+  registerUserWithNewProfile(@Arg('input') inputUser: CreateUserInput, inputProfile: CreateProfileInput) {
+    const user = this.userService.registerUserWithNewProfile(inputUser, inputProfile)
+    return user
   }
 
   @Query(() => String) // Returns the JWT

@@ -1,9 +1,23 @@
-import { Piece, CreatePieceInput, GetPieceInput, UpdatePieceInput, ReleasePieceInput, PieceModel, PieceVersionEdgeModel } from '../schema/piece.schema'
+import {
+  Piece,
+  CreatePieceInput,
+  GetPieceInput,
+  GetPieceListInput,
+  UpdatePieceInput,
+  ReleasePieceInput,
+  PieceModel,
+  PieceVersionEdgeModel,
+  PieceVersionEdge,
+} from '../schema/piece.schema'
 import TagService from '../service/tag.service'
 import { User } from '../schema/user.schema'
 import { PIECE_EDGES, ERROR_MESSAGES } from '../types/data'
-import { applyChangeset } from '../utils/json-diff-ts/jsonDiff'
+import { applyChangeset, revertChangeset } from '../utils/json-diff-ts/jsonDiff'
+import { Number } from 'mongoose'
 
+PieceModel.schema.methods.aaa = function () {
+  console.log('test')
+}
 class PieceService {
   /** Create complete document with filled tags, slides
    * Tags must exist in db
@@ -109,7 +123,7 @@ class PieceService {
     let newPiece = null
 
     try {
-      // if PieceId does not exist, we need to create a new piece
+      // Find Piece to update
       const piece = await PieceModel.findOne({ _id: input.Id, owner: input.owner }).lean()
 
       // If piece is not updated by some other client
@@ -144,19 +158,86 @@ class PieceService {
     }
   }
 
-  async findUserPieces(owner: User['_id']) {
-    const pieces = await PieceModel.find({ owner: owner }).lean()
+  /**
+   * If no owner defined: give all pieces of given updateVersion and releaseVersion
+   * If no releaseVersion defined: give all pieces of latest releaseVersion and given updateVersion and owner
+   * If no updateVersion defined of given owner and releaseVersion: give latest updateVersion
+   * @param input
+   * @returns
+   */
+  async findPieces(input: GetPieceListInput & { owner: User['_id'] }) {
+    // Should return latest release
 
-    return pieces
+    try {
+      const pieceVersionQuery = input.pieceVersion ? 'pieceVersion: input.pieceVersion' : ''
+      const newPieces: Piece[] = []
+      // If we want the piece with the highest versionnumber. We do not need to check the highest pieceVersion
+      // because we always have the latest version in the PieceModel
+      const pieces: Piece[] = !input.pieceVersion
+        ? await PieceModel.find({ owner: input.owner, pieceVersionQuery }, { $max: '$pieceVersion' }).lean()
+        : await PieceModel.find({ owner: input.owner, pieceVersion: input.pieceVersion }).lean()
+
+      for (let i = 0; i < pieces.length; i++) {
+        const newPiece = await this.givePieceUpdateVersion(pieces[i], input.updateVersion ? input.updateVersion : null)
+        newPieces.concat(newPiece)
+      }
+
+      return newPieces
+    } catch (error) {
+      console.log(error)
+      throw new Error('piece.service.findUserPieces: ' + ERROR_MESSAGES.PIECE_QUERY + ': ' + input.owner)
+    }
+  }
+
+  /**
+   * Generates the requested update of a certain release of a piece
+   * @param piece: the piece
+   * @param updateVersion: which version of the update is requested
+   * @returns: the generated update of the Piece
+   */
+  async givePieceUpdateVersion(piece: Piece, updateVersion: number | null) {
+    // If updateVersion = null, we request the latest update
+    if (updateVersion === null) return piece
+
+    try {
+      // Find edges met updates (both piece._id's are same) of specific release
+      // and sort them descending so we start with latest update
+      const edges: PieceVersionEdge[] = await PieceVersionEdgeModel.find({ oldPiece: piece._id, newPiece: piece._id }, { $sort: { version: -1 } })
+
+      for (let i2 = 0; i2 < edges.length; i2++) {
+        // The next edge should have same updateVersion als piece, otherwise there is an error
+        if (edges[i2].version !== piece.updateVersion) {
+          throw new Error('piece.service.givePieceUpdateVersion: ' + ERROR_MESSAGES.PIECE_UPDATEVERSION + ': ' + piece._id)
+        }
+        // We need to revert until we reached the requested updateVersion
+        else if (updateVersion && piece.updateVersion > updateVersion) {
+          revertChangeset(piece, edges[i2].delta)
+        } else break
+      }
+
+      return piece
+    } catch (error) {
+      console.log(error)
+      throw new Error('piece.service.givePieceUpdateVersion: ' + ERROR_MESSAGES.PIECE_FIND + ': ' + piece._id)
+    }
   }
 
   /**
    *  Finds a single piece of a user
    */
-  async findSingleUserPiece(input: GetPieceInput & { owner: User['_id'] }) {
-    const piece = PieceModel.findOne({ _id: input.Id, owner: input.owner }).lean()
+  async findSinglePiece(input: GetPieceInput & { owner: User['_id'] }) {
+    try {
+      const piece: Piece = !input.pieceVersion
+        ? await PieceModel.findOne({ _id: input.Id }).lean()
+        : await PieceModel.findOne({ _id: input.Id, pieceVersion: input.pieceVersion }).lean()
 
-    return piece
+      const updatePiece = await this.givePieceUpdateVersion(piece, input.updateVersion ? input.updateVersion : null)
+
+      return updatePiece
+    } catch (error) {
+      console.log(error)
+      throw new Error('piece.service.findSinglePiece: ' + ERROR_MESSAGES.PIECE_QUERY + ': ' + input.Id)
+    }
   }
 
   /**

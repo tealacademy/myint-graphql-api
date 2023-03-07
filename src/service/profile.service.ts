@@ -1,5 +1,5 @@
 import { CreateProfileInput, GetProfileInput, ProfileModel } from '../schema/profile.schema'
-import { EdgeModel } from '../schema/edge.schema'
+// import { EdgeModel } from '../schema/edge.schema'
 
 class ProfileService {
   async createProfile(input: CreateProfileInput) {

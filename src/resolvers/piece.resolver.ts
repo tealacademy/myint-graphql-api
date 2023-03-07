@@ -1,5 +1,5 @@
 import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from 'type-graphql'
-import { CreatePieceInput, GetPieceInput, Piece } from '../schema/piece.schema'
+import { CreatePieceInput, GetPieceInput, GetPieceListInput, Piece } from '../schema/piece.schema'
 import PieceService from '../service/piece.service'
 import Context from '../types/context'
 
@@ -19,16 +19,24 @@ export default class PieceResolver {
 
   @Authorized()
   @Query(() => [Piece])
-  getPieces(@Ctx() context: Context) {
+  getPieces(@Arg('input') input: GetPieceListInput, @Ctx() context: Context) {
     const user = context.user!
-    return this.pieceService.findUserPieces(user._id)
+
+    // If no owner in input, we use user
+    // If owner in input, then piece from that owner
+    const ownerId = input.owner ? input.owner : user._id
+    const { owner, ...newInput } = input
+    return this.pieceService.findPieces({ ...newInput, owner: ownerId })
   }
 
   @Authorized()
   @Query(() => Piece)
   getPiece(@Arg('input') input: GetPieceInput, @Ctx() context: Context) {
     const user = context.user!
-    return this.pieceService.findSingleUserPiece({ ...input, owner: user._id })
+
+    const ownerId = input.owner ? input.owner : user._id
+    const { owner, ...newInput } = input
+    return this.pieceService.findSinglePiece({ ...input, owner: ownerId })
   }
 
   // @Mutation(() => Boolean)

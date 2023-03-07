@@ -62,10 +62,12 @@ export class User extends MyinTObject {
   // @prop({ required: true, default: [], ref: () => Group })
   // groups: Ref<Group>[]
 
+  @Field(() => Boolean)
   @prop({ required: true, default: false })
   active: boolean
 
-  @prop(() => Profile)
+  @Field(() => Profile)
+  @prop({ required: true })
   profile: Ref<Profile>
 }
 
@@ -100,8 +102,9 @@ export class CreateUserInput {
   @Field(() => String, { nullable: true }) // When no settings, user gets defaultSettings in frontend
   settings?: string
 
+  //
   @Field(() => String)
-  profile: string
+  profile?: string
 }
 
 @InputType()

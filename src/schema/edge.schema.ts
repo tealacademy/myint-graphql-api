@@ -13,6 +13,9 @@ export class Edge extends MyinTObjectOwner {
   @Field(() => String)
   @prop({ required: true })
   label: string
+
+  @prop({ required: false })
+  deleted?: Date
 }
 
 /**
@@ -28,8 +31,8 @@ export class Edge extends MyinTObjectOwner {
 export class VersionEdge extends Edge {
   // delta of the change. Typegoose has only String as Type, but we want de delta of type Changeset (will be json-string)
   @Field((type) => String)
-  @prop({ required: false })
-  delta?: Changeset
+  @prop({ required: true, default: '' })
+  delta: Changeset
 
   @Field(() => Number)
   @prop({ required: true })
