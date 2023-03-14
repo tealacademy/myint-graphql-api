@@ -25,7 +25,10 @@ import Context from './types/context'
 async function bootstrap() {
   const auth = new AuthService()
 
-  // Build the schema with type-graphql (we need it in the apollo-server)
+  /** Build data-model
+   * Build the schema with type-graphql (we need it in the apollo-server)
+   */
+  // We need a
   const authChecker = auth.authChecker
   const schema = await buildSchema({
     resolvers,
@@ -33,28 +36,24 @@ async function bootstrap() {
     authChecker,
   })
 
-  // Initialise express as middleware
-  // We are applying middleware (express) to the server.
-  // If all you need is a GraphQL endpoint, then using the standalone library (apollo-server) is generally preferred because
-  // there will be less boilerplate to write (features like subscriptions, file uploads, etc. just work without additional configuration).
-  // However, many applications require additional functionality beyond just exposing a single API endpoint.
-  // Examples include: Webhooks, OAuth callbacks, Session management, Cookie parsing, CSRF protection, Monitoring or logging requests,
-  // Rate limiting, Geofencing, Serving static content, Server-side rendering
-  // If you need this sort of functionality for your application, then you'll want to utilize an HTTP framework like Express and then use the
-  // appropriate integration library (i.e. apollo-server-express).
+  /** Initialise http-server
+   * We are applying middleware (express) to the server 'app'.
+   */
   const app = express()
 
+  // Initialise express as middleware
   app.get('/confirmation/:token', async (req, res) => {
     await new UserService().confirmUser(req.params.token)
 
     return res.redirect(config.get('clientDomain'))
   })
 
-  // graphqlUploadExpress is express.js middleware. You must put it before the main GraphQL sever middleware.
-  // Also, make sure there is no other Express.js middleware which parses multipart/form-data HTTP requests before the graphqlUploadExpress middleware!
+  /** Apply middleware to http-server */
   app.use(graphqlUploadExpress())
 
-  // Create the apollo server.
+  /** Create the graphQL server.
+   * We use Apollo server as graphQL server
+   */
   // The GraphQLSchema should be named 'schema'
   const server = new ApolloServer({
     schema,
@@ -69,19 +68,21 @@ async function bootstrap() {
   // Start the apollo-server and wait till it has started
   await server.start()
 
-  // applyMiddleware applies Apollo Server as middleware to the HTTP framework of a Node.js middleware library, such as hapi or express.
-  // You call this method instead of listen if you're using a middleware integration, such as apollo-server-express. You should call await server.start() before calling this method.
-  // What applyMiddleware actually does is only add middleware to the path (default /graphql router), so it’s not applied to the whole app
+  /** Apply middleware to graphQL-server */
   server.applyMiddleware({ app })
 
-  // The app.listen() method binds itself with the specified host and port to bind and listen for any connections.
-  // The app object returned by express() is in fact a JavaScript function, designed to be passed to Node’s HTTP servers as a callback to handle requests.
-  // This makes it easy to provide both HTTP and HTTPS versions of your app with the same code base, as the app does not inherit from these (it is simply a callback).
+  /** Start http-server
+   * The app.listen() method binds itself with the specified host and port to bind and listen for any connections.
+   *  The app object returned by express() is in fact a JavaScript function, designed to be passed to Node’s HTTP servers as a callback to handle requests.
+   * This makes it easy to provide both HTTP and HTTPS versions of your app with the same code base, as the app does not inherit from these (it is simply a callback).
+   */
   app.listen({ port: config.get('serverPort') }, () => {
     console.log(`MyinT-graphQL-API is listening on http://${config.get('domain')}:${config.get('serverPort')}`)
   })
 
-  // When server has started we can connect to the database we need
+  /** Connect to database
+   *  When server has started we can connect to the database we need
+   */
   new DatabaseService().connect()
 }
 
