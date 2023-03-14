@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="4VIyficbOBPKmLzrh8-S" name="Information flow">
-        <mxGraphModel dx="1090" dy="1279" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+        <mxGraphModel dx="1002" dy="1265" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -853,7 +853,7 @@
         </mxGraphModel>
     </diagram>
     <diagram name="Schema edges" id="o3cr5-RXHv3DywJclvSp">
-        <mxGraphModel dx="1090" dy="1279" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="1654" math="0" shadow="0">
+        <mxGraphModel dx="1002" dy="1265" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="1654" math="0" shadow="0">
             <root>
                 <mxCell id="ONzGvYB-fRP--oiGADBi-0"/>
                 <mxCell id="ONzGvYB-fRP--oiGADBi-1" parent="ONzGvYB-fRP--oiGADBi-0"/>

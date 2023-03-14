@@ -1,11 +1,12 @@
 import { Arg, Ctx, Authorized, Mutation, Query, Resolver } from 'type-graphql'
 import { CreateUserInput, LoginInput, User } from '../schema/user.schema'
-import { CreateProfileInput, Profile } from '../schema/profile.schema'
+import { CreateProfileInput } from '../schema/profile.schema'
 import UserService from '../service/user.service'
 import ProfileService from '../service/profile.service'
 import Context from '../types/context'
 
-// grapQL does not know this will be a resolver so we add @Resolver() (from type-graphql)
+// TypeGrapQL does not know this will be a resolver so we add @Resolver() (from type-graphql)
+// https://blog.logrocket.com/a-practical-guide-to-typescript-decorators/
 @Resolver()
 export default class UserResolver {
   constructor(private userService: UserService, private profileService: ProfileService) {

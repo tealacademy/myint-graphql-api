@@ -7,6 +7,7 @@ import LogResolver from './log.resolver'
 import FrameResolver from './frame.resolver'
 import FileResolver from './file.resolver'
 import MessageResolver from './message.resolver'
+import DatabaseResolver from './database.resolver'
 
 export const resolvers = [
   UserResolver,
@@ -18,4 +19,5 @@ export const resolvers = [
   LogResolver,
   FileResolver,
   MessageResolver,
+  DatabaseResolver,
 ] as const

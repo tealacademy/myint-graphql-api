@@ -224,15 +224,21 @@ class UserService {
     }
   }
 
-  // async logout(context: Context) {
-  //   // not necessary? can be handled on client-side
-  //   // by throwing out accesstoken
+  async logout(context: Context) {
+    // Logout handled on client-side by throwing out accesstoken
+    // on this side we log and register for messaging (you can see if someone is online).
 
-  //   if (context.user) {
-  //     const newLog = new LogService().createLog({ action: LOG_ACTIONS.LOGOUT_USER, data: '' }, context.user, LOG_EDGES.USER_LOG_ITEM)
-  //   }
-  //   return null
-  // }
+    if (context.user) {
+      // Log event
+      const newLog = new LogService().createLog({ action: LOG_ACTIONS.LOGOUT_USER, data: '' }, context.user, LOG_EDGES.USER_LOG_ITEM)
+
+      // Logout so user not authorised anymore
+      context.user = null
+      // update database
+      // !
+    }
+    return null
+  }
 
   async userInGroup(userId: String, groupId: String) {
     return true

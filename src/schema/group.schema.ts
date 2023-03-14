@@ -27,7 +27,10 @@ export class Group extends MyinTObjectOwner {
   // groups: Ref<Group>[]
 }
 
-/** The usergroup has user(s) with their role(s) in this group */
+/**
+ * The usergroup has user(s) with their role(s) in this group
+ * We use this when we want to grant rights to objects (For example a Piece or Frame (participants))
+ */
 @ObjectType({ description: 'The group model with users and roles' })
 @modelOptions({ options: { allowMixed: 0 } })
 export class UserGroup extends Group {
@@ -40,7 +43,8 @@ export class UserGroup extends Group {
   roles: Ref<Role>[]
 }
 
-@ObjectType({ description: 'The edge for changes on a clue' })
+/** */
+@ObjectType({ description: 'The edge for changes on a usergroup' })
 @modelOptions({ options: { allowMixed: 0 } })
 export class UserGroupVersionEdge extends VersionEdge {
   // Original role

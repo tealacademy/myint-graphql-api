@@ -6,7 +6,7 @@ import { Edge, VersionEdge } from './edge.schema'
 import { Theme } from './theme.schema'
 import { File } from './file.schema'
 import { UserGroup } from './group.schema'
-import { Tag, CreateTagInput } from './tag.schema'
+import { Tag, ListTagInput } from './tag.schema'
 import { Changeset } from './../utils/json-diff-ts/jsonDiff'
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz123456789', 10)
@@ -212,8 +212,8 @@ export class CreatePieceInput {
   @Field(() => String)
   deepMyinT?: string
 
-  @Field(() => [Tag])
-  tags?: Tag[]
+  @Field(() => [ListTagInput])
+  tags?: ListTagInput[]
 
   @Field(() => [CreateSlideInput])
   slides?: CreateSlideInput[]

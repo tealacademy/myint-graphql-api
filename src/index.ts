@@ -15,16 +15,18 @@ import { ApolloServerPluginLandingPageGraphQLPlayground, ApolloServerPluginLandi
 
 // Modules
 import { resolvers } from './resolvers'
-import { connectToDatabase } from './utils/database'
-import { verifyJwt } from './utils/jwt'
-import { User } from './schema/user.schema'
 import UserService from './service/user.service'
+import DatabaseService from './service/database.service'
+import AuthService from './service/auth.service'
 import Context from './types/context'
-import authChecker from './utils/authChecker'
+// import { authChecker } from './service/auth.service'
 
 // bootstrap is the main-function that starts our API and will be called when a client makes a request
 async function bootstrap() {
+  const auth = new AuthService()
+
   // Build the schema with type-graphql (we need it in the apollo-server)
+  const authChecker = auth.authChecker
   const schema = await buildSchema({
     resolvers,
     dateScalarMode: 'timestamp', // "timestamp" or "isoDate"
@@ -57,21 +59,7 @@ async function bootstrap() {
   const server = new ApolloServer({
     schema,
     context: (ctx: Context) => {
-      const context = ctx
-
-      const authHeader = ctx.req.get('Authorization')
-      if (authHeader) {
-        const token = authHeader.split(' ')[1]
-
-        if (token) {
-          // console.log('verifyJWT')
-          const user = verifyJwt<User>(token)
-
-          context.user = user // As soon as user is put in the context, @Authorised will validate in resolver
-        }
-      }
-      // console.log(context)
-      return context
+      return auth.verifyUser(ctx)
     },
     // Use the PlayGround in DEV mode (at serverport)
     // The ApolloServerPluginLandingPageProductionDefault shows a minimalist landing page (at serverport): https://www.apollographql.com/docs/apollo-server/api/plugin/landing-pages/#default-production-landing-page
@@ -94,7 +82,7 @@ async function bootstrap() {
   })
 
   // When server has started we can connect to the database we need
-  connectToDatabase()
+  new DatabaseService().connect()
 }
 
 bootstrap()
