@@ -6,7 +6,7 @@ import { Field, InputType, ObjectType, ID, Int } from 'type-graphql'
 import { Profile, CreateProfileInput } from './profile.schema'
 import { Group } from './group.schema'
 import { MyinTObject } from './myintobject.schema'
-import { Role } from './role.schema'
+import { MyinT } from './myintobject.schema'
 import { Edge } from './edge.schema'
 
 function findByEmail(this: ReturnModelType<typeof User, QueryHelpers>, email: User['eMail']) {
@@ -40,10 +40,10 @@ export class User extends MyinTObject {
   @prop({ required: true })
   passWord: string
 
-  // Relation through Edge
-  // @Field(() => Profile)
-  // @prop({ required: false, ref: () => Profile })
-  // profile?: Ref<Profile>
+  // Every user has a MyinT of his own
+  @Field(() => MyinT)
+  @prop({ required: true, ref: () => MyinT })
+  myint: Ref<MyinT>
 
   @Field(() => String)
   @prop({ required: true })

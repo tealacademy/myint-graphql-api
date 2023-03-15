@@ -1,5 +1,5 @@
 import config from 'config'
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken' // https://jwt.io/introduction/
 
 // Get and decode the public and private key
 const publicKey = Buffer.from(config.get<string>('publicKey'), 'base64').toString('ascii')

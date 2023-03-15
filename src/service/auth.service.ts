@@ -1,7 +1,6 @@
 import { AuthChecker } from 'type-graphql'
-import Context from '../types/context'
 import { verifyJwt } from '../utils/jwt'
-import { User } from '../schema/user.schema'
+import { Context, contextUser } from '../types/context'
 import { UserModel } from '../schema/user.schema'
 
 /**
@@ -12,7 +11,18 @@ class AuthService {
    *
    */
   authChecker: AuthChecker<Context> = ({ context }) => {
+    // check on roles and groups
+
     return !!context.user
+  }
+
+  // ! FROM https://typegraphql.com/docs/authorization.html
+  customAuthChecker: AuthChecker<Context> = ({ root, args, context, info }, roles) => {
+    // here we can read the user from context
+    // and check his permission in the db against the `roles` argument
+    // that comes from the `@Authorized` decorator, eg. ["ADMIN", "MODERATOR"]
+
+    return true // or false if access is denied
   }
 
   /**
@@ -44,6 +54,11 @@ class AuthService {
     return code === process.env.ADMIN_INIT_CODE
   }
 
+  /**
+   *
+   * @param ctx
+   * @returns
+   */
   async verifyUser(ctx: Context) {
     const context = ctx
 
@@ -53,19 +68,42 @@ class AuthService {
 
       if (token) {
         // console.log('verifyJWT')
-        const user = verifyJwt<User>(token)
+        const user = verifyJwt<contextUser>(token)
 
         context.user = user // As soon as user is put in the context, @Authorised will validate in resolver
+
+        // add roles to user-object.
       }
     }
-    // console.log(context)
+
     return context
   }
 }
+
+export default AuthService
 
 // export const authChecker: AuthChecker<Context> = ({ context }) => {
 //   // if user exists, return true, otherwise false
 //   return !!context.user
 // }
 
-export default AuthService
+// example auth checker function
+// export const authChecker: AuthChecker<Context> = ({ context: { user } }, roles) => {
+//   if (roles.length === 0) {
+//     // if `@Authorized()`, check only if user exists
+//     return user !== undefined;
+//   }
+//   // there are some roles defined now
+
+//   if (!user) {
+//     // and if no user, restrict access
+//     return false;
+//   }
+//   if (user.roles.some(role => roles.includes(role))) {
+//     // grant access if the roles overlap
+//     return true;
+//   }
+
+//   // no roles matched, restrict access
+//   return false;
+// };

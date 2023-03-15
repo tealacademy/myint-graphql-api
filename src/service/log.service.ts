@@ -1,9 +1,9 @@
 import { CreateLogInput, LogModel } from '../schema/log.schema'
-import { User } from '../schema/user.schema'
+import { contextUser } from '../types/context'
 import { LOG_EDGES } from '../types/data'
 
 class LogService {
-  async createLog(input: CreateLogInput, user: User, label: string) {
+  async createLog(input: CreateLogInput, user: contextUser, label: string) {
     const newLog = await LogModel.create(input)
 
     // const logEdge = new EdgeService().createEdge({ nodeA: user._id, nodeB: newLog.id, label: label })

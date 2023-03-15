@@ -21,10 +21,6 @@ export class Piece extends MyinTObjectOwner {
   @prop({ required: true, defaultValue: '' })
   title: string
 
-  @Field(() => Date, { nullable: true })
-  @prop({ required: true })
-  createdAtClient: Date
-
   @Field(() => String, { nullable: true })
   @prop({ required: false })
   deepMyinT?: string

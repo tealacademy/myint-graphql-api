@@ -1,6 +1,6 @@
 export default {
   domain: 'localhost',
-  clientDomain: 'http://localhost:3000/',
+  clientDomain: 'http://localhost:3000/', // Wehn live it will be https://www.myint.io we have to redirect to
   // dbUri: mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_DB}/?tls=true&tlsAllowInvalidCertificates=true
   dbUri: `mongodb://${process.env.MONGO_DB}/?tls=true&tlsAllowInvalidCertificates=true`,
   serverPort: 4000,

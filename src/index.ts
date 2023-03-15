@@ -18,18 +18,21 @@ import { resolvers } from './resolvers'
 import UserService from './service/user.service'
 import DatabaseService from './service/database.service'
 import AuthService from './service/auth.service'
-import Context from './types/context'
+import { Context } from './types/context'
 // import { authChecker } from './service/auth.service'
 
 // bootstrap is the main-function that starts our API and will be called when a client makes a request
 async function bootstrap() {
+  const path = '/graphql'
+
   const auth = new AuthService()
 
-  /** Build data-model
+  /** Define access-points
    * Build the schema with type-graphql (we need it in the apollo-server)
    */
-  // We need a
+  // With authChecker we define de decorator @Authorised that checks if current user is authorised
   const authChecker = auth.authChecker
+  // for the schema we need the resolvers
   const schema = await buildSchema({
     resolvers,
     dateScalarMode: 'timestamp', // "timestamp" or "isoDate"
@@ -45,13 +48,14 @@ async function bootstrap() {
   app.get('/confirmation/:token', async (req, res) => {
     await new UserService().confirmUser(req.params.token)
 
+    // With this res(ponse) you can redirect the browser on the client
     return res.redirect(config.get('clientDomain'))
   })
 
   /** Apply middleware to http-server */
-  app.use(graphqlUploadExpress())
+  app.use(path, graphqlUploadExpress())
 
-  /** Create the graphQL server.
+  /** Create graphQL server.
    * We use Apollo server as graphQL server
    */
   // The GraphQLSchema should be named 'schema'
@@ -69,11 +73,12 @@ async function bootstrap() {
   await server.start()
 
   /** Apply middleware to graphQL-server */
-  server.applyMiddleware({ app })
+
+  server.applyMiddleware({ app, path })
 
   /** Start http-server
    * The app.listen() method binds itself with the specified host and port to bind and listen for any connections.
-   *  The app object returned by express() is in fact a JavaScript function, designed to be passed to Node’s HTTP servers as a callback to handle requests.
+   * The app object returned by express() is in fact a JavaScript function, designed to be passed to Node’s HTTP servers as a callback to handle requests.
    * This makes it easy to provide both HTTP and HTTPS versions of your app with the same code base, as the app does not inherit from these (it is simply a callback).
    */
   app.listen({ port: config.get('serverPort') }, () => {
@@ -81,7 +86,8 @@ async function bootstrap() {
   })
 
   /** Connect to database
-   *  When server has started we can connect to the database we need
+   * When server has started we can connect to the database we need
+   * The graphQL-server will use this connection?
    */
   new DatabaseService().connect()
 }

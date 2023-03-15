@@ -6,7 +6,8 @@ import { ThemeModel } from '../schema/theme.schema'
 /**
  * The DatabaseService performs administrative tasks on the database:
  * - deleting the whole database
- * - initialising the inital user: admin-user + group + roles
+ * - initialising the initial roles
+ * - initialising the iniital user: admin-user + group + admirole
  * - initialising default settings: Piece-theme
  */
 class DatabaseService {
@@ -25,6 +26,7 @@ class DatabaseService {
   }
 
   async init(input: any) {
+    // create roles
     // create admin
     // create default Piece Theme
   }

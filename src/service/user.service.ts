@@ -5,7 +5,7 @@ import { nanoid } from 'nanoid'
 import { CreateUserInput, LoginInput, UserModel, User, AddUserGroupInput, UserGroupEdgeModel } from '../schema/user.schema'
 import { CreateProfileInput, Profile } from '../schema/profile.schema'
 import ProfileService from '../service/profile.service'
-import Context from '../types/context'
+import { Context, contextUser } from '../types/context'
 import { signJwt } from '../utils/jwt'
 import jwt from 'jsonwebtoken'
 import config from 'config'
@@ -193,7 +193,7 @@ class UserService {
   async login(input: LoginInput, context: Context) {
     try {
       // Get our user by email. lean means we don't need to use any of the methods on this user
-      const user = await UserModel.find().findByEmail(input.eMail)
+      const user: User = await UserModel.find().findByEmail(input.eMail).lean()
 
       if (!user) {
         throw new ApolloError(ERROR_MESSAGES.EMAIL_PASSWORD_INCORRECT)
@@ -211,7 +211,12 @@ class UserService {
       }
 
       // sign a jwt
-      const token = signJwt(omit(user.toJSON(), ['passWord', 'active']))
+      // create a token with the User-data in it.
+      const roles = await this.getUserRoles(user)
+
+      const jwtUser: contextUser = { id: user._id, roles }
+      // const token = signJwt(omit(jwtUser.toJSON(), ['passWord', 'active']))
+      const token = signJwt(jwtUser)
 
       const dataString = JSON.stringify(`{accessToken: ${token}}`)
       // const newLog = new LogService().createLog({ action: LOG_ACTIONS.LOGIN_USER, data: dataString }, user, LOG_EDGES.USER_LOG_ITEM)
@@ -222,6 +227,15 @@ class UserService {
     } catch (e) {
       throw new Error('user.service.login: ' + ERROR_MESSAGES.USER_LOGIN + ': ' + input.eMail)
     }
+  }
+
+  /**
+   * Return the roles this user is assigned to according to the groups the user is in
+   * @param user user
+   * @returns roles
+   */
+  async getUserRoles(user: User) {
+    return []
   }
 
   async logout(context: Context) {

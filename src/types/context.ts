@@ -1,10 +1,13 @@
 import { Request, Response } from 'express'
 import { User } from '../schema/user.schema'
 
-interface Context {
+export interface Context {
   req: Request
   res: Response
-  user: User | null
+  user: contextUser | null
 }
 
-export default Context
+export interface contextUser {
+  id: string
+  roles: string[]
+}
