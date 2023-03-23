@@ -18,9 +18,9 @@ export enum MODELS {
 } // ! missing the edge-models
 
 export enum ROLES {
-  VIEWER = 2001,
-  EDITOR = 1984,
-  ADMIN = 5150,
+  VIEWER = 100,
+  EDITOR = 200,
+  CREATOR = 300,
 }
 
 export enum PIECE_EDGES {

@@ -25,168 +25,35 @@ export const adminGroup: CreateGroupInput = {
   description: DEFAULT_VALUES.ADMIN_GROUP_DESCRIPTION,
 }
 
-export const defaultRole: CreateRoleInput = {
+export const viewerRole: CreateRoleInput = {
   Id: '',
-  permissions: [
-    {
-      objectType: MODELS.CHALLENGE,
-      create: false,
-      read: true,
-      update: false,
-      delete: false,
-    },
-    {
-      objectType: MODELS.CLUE,
-      create: true,
-      read: true,
-      update: true,
-      delete: true,
-    },
-    {
-      objectType: MODELS.FRAME,
-      create: true,
-      read: true,
-      update: true,
-      delete: true,
-    },
-    {
-      objectType: MODELS.GROUP,
-      create: true,
-      read: true,
-      update: true,
-      delete: true,
-    },
-    {
-      objectType: MODELS.MYINTSET,
-      create: true,
-      read: true,
-      update: true,
-      delete: true,
-    },
-    {
-      objectType: MODELS.PIECE,
-      create: true,
-      read: true,
-      update: true,
-      delete: true,
-    },
-    {
-      objectType: MODELS.PROFILE,
-      create: true,
-      read: true,
-      update: true,
-      delete: true,
-    },
-    {
-      objectType: MODELS.ROLE,
-      create: true,
-      read: true,
-      update: true,
-      delete: true,
-    },
-    {
-      objectType: MODELS.TAG,
-      create: true,
-      read: true,
-      update: true,
-      delete: true,
-    },
-    {
-      objectType: MODELS.THEME,
-      create: true,
-      read: true,
-      update: true,
-      delete: true,
-    },
-    {
-      objectType: MODELS.USER,
-      create: true,
-      read: true,
-      update: true,
-      delete: true,
-    },
-  ],
+  title: 'viewer',
+  permissions: {
+    create: false,
+    read: true,
+    update: false,
+    delete: false,
+  },
 }
 
-export const adminRole: CreateRoleInput = {
+export const editorRole: CreateRoleInput = {
   Id: '',
-  permissions: [
-    {
-      objectType: MODELS.CHALLENGE,
-      create: true,
-      read: true,
-      update: true,
-      delete: true,
-    },
-    {
-      objectType: MODELS.CLUE,
-      create: true,
-      read: true,
-      update: true,
-      delete: true,
-    },
-    {
-      objectType: MODELS.FRAME,
-      create: true,
-      read: true,
-      update: true,
-      delete: true,
-    },
-    {
-      objectType: MODELS.GROUP,
-      create: true,
-      read: true,
-      update: true,
-      delete: true,
-    },
-    {
-      objectType: MODELS.MYINTSET,
-      create: true,
-      read: true,
-      update: true,
-      delete: true,
-    },
-    {
-      objectType: MODELS.PIECE,
-      create: true,
-      read: true,
-      update: true,
-      delete: true,
-    },
-    {
-      objectType: MODELS.PROFILE,
-      create: true,
-      read: true,
-      update: true,
-      delete: true,
-    },
-    {
-      objectType: MODELS.ROLE,
-      create: true,
-      read: true,
-      update: true,
-      delete: true,
-    },
-    {
-      objectType: MODELS.TAG,
-      create: true,
-      read: true,
-      update: true,
-      delete: true,
-    },
-    {
-      objectType: MODELS.THEME,
-      create: true,
-      read: true,
-      update: true,
-      delete: true,
-    },
-    {
-      objectType: MODELS.USER,
-      create: true,
-      read: true,
-      update: true,
-      delete: true,
-    },
-  ],
+  title: 'editor',
+  permissions: {
+    create: false,
+    read: true,
+    update: true,
+    delete: false,
+  },
+}
+
+export const creatorRole: CreateRoleInput = {
+  Id: '',
+  title: 'creator',
+  permissions: {
+    create: true,
+    read: true,
+    update: true,
+    delete: true,
+  },
 }

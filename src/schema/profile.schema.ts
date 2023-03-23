@@ -5,21 +5,13 @@ import { Field, InputType, ObjectType, ID } from 'type-graphql'
 import { User } from '../schema/user.schema'
 import { MyinTObject } from './myintobject.schema'
 import { Edge } from './edge.schema'
+import { MyinT } from './myintobject.schema'
 
-@ObjectType({ description: 'The user-profile model' }) // grapQL does not know this will be an object so we add @Object() (from type-graphql)
-@modelOptions({ options: { allowMixed: 0 } })
-export class Profile extends MyinTObject {
-  @Field(() => String)
-  @prop({ required: true })
-  firstName: string
-
+@ObjectType({ description: 'The address class' }) // grapQL does not know this will be an object so we add @Object() (from type-graphql)
+export class Address {
   @Field(() => String, { nullable: true })
   @prop({ required: false })
-  lastName?: string
-
-  @Field(() => String, { nullable: true })
-  @prop({ required: false })
-  address?: string
+  street?: string
 
   @Field(() => String, { nullable: true })
   @prop({ required: false })
@@ -32,12 +24,35 @@ export class Profile extends MyinTObject {
   @Field(() => String, { nullable: true })
   @prop({ required: false })
   city?: string
+}
 
+@ObjectType({ description: 'The user-profile model' }) // grapQL does not know this will be an object so we add @Object() (from type-graphql)
+@modelOptions({ options: { allowMixed: 0 } })
+export class Profile extends MyinTObject {
+  @Field(() => String)
+  @prop({ required: true })
+  firstName: string
+
+  @Field(() => String, { nullable: true })
+  @prop({ required: false })
+  lastName?: string
+
+  @Field(() => Address)
+  @prop({ required: false })
+  address?: Address
+
+  // Every user is determined by its profile and has one MyinT of his own
+  @Field(() => MyinT)
+  @prop({ required: true, ref: () => MyinT })
+  myinT: Ref<MyinT>
   // @Field(() => [User]) // a profile can have 0..n users (users can have more credentials)
   // @prop({ required: true, ref: () => User })
   // users: Ref<User>[]
 }
 
+/** Edge: to which user(s) belongs a profile
+ *  We put this in an edge, instead of an array in the Profile-object because of ...
+ */
 @ObjectType({ description: 'Edge: to which user(s) belongs a profile' })
 export class ProfileUserEdge extends Edge {
   @Field(() => Profile)

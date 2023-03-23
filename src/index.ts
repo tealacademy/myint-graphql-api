@@ -27,7 +27,7 @@ async function bootstrap() {
 
   const auth = new AuthService()
 
-  /** Define access-points
+  /** Define graphQL access-points
    * Build the schema with type-graphql (we need it in the apollo-server)
    */
   // With authChecker we define de decorator @Authorised that checks if current user is authorised
@@ -72,8 +72,7 @@ async function bootstrap() {
   // Start the apollo-server and wait till it has started
   await server.start()
 
-  /** Apply middleware to graphQL-server */
-
+  /** Apply Apollo server (middleware) to express-server */
   server.applyMiddleware({ app, path })
 
   /** Start http-server

@@ -1,10 +1,10 @@
-import { CreateGroupInput, GetGroupInput, UserGroupModel, ParticipantGroupModel } from '../schema/group.schema'
+import { CreateGroupInput, GetGroupInput, ParticipantGroupModel } from '../schema/group.schema'
 import { User } from '../schema/user.schema'
 
 class GroupService {
   async createUserGroup(input: CreateGroupInput & { owner: User['_id'] }) {
     //} & { user: User["_id"] }) {
-    return UserGroupModel.create(input)
+    // return UserGroupModel.create(input)
   }
 
   // async createParticipantGroup(input: CreateGroupInput & { owner: User['_id'] }) {

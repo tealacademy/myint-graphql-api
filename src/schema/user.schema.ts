@@ -6,7 +6,7 @@ import { Field, InputType, ObjectType, ID, Int } from 'type-graphql'
 import { Profile, CreateProfileInput } from './profile.schema'
 import { Group } from './group.schema'
 import { MyinTObject } from './myintobject.schema'
-import { MyinT } from './myintobject.schema'
+import { MyinTSet } from './myintset.schema'
 import { Edge } from './edge.schema'
 
 function findByEmail(this: ReturnModelType<typeof User, QueryHelpers>, email: User['eMail']) {
@@ -39,11 +39,6 @@ export class User extends MyinTObject {
 
   @prop({ required: true })
   passWord: string
-
-  // Every user has a MyinT of his own
-  @Field(() => MyinT)
-  @prop({ required: true, ref: () => MyinT })
-  myint: Ref<MyinT>
 
   @Field(() => String)
   @prop({ required: true })
@@ -82,8 +77,30 @@ export class UserGroupEdge extends Edge {
   group: Ref<Group>
 }
 
+/** UserOrganisationMyinTSetEdge
+ * A Person can connect a MyinTSet-object of his MyinT to a User-Organisation relation (UserOrganisationMyinTSetEdge).
+ * This way only a subset of the Persons MyinT will be available for other Users in this Organisation.
+ */
+@ObjectType({ description: 'Edge: which MyinTSet a User has/wants to have in a specific Organisation' })
+export class UserOrganisationMyinTSetEdge extends Edge {
+  @Field(() => User)
+  @prop({ required: true, ref: () => User })
+  user: Ref<User>
+
+  @Field(() => Group)
+  @prop({ required: true, ref: () => Group })
+  group: Ref<Group>
+
+  @Field(() => MyinTSet)
+  @prop({ required: true, ref: () => MyinTSet })
+  myinTSet: Ref<MyinTSet>
+}
+
 export const UserModel = getModelForClass<typeof User, QueryHelpers>(User, { schemaOptions: { timestamps: true } })
 export const UserGroupEdgeModel = getModelForClass<typeof UserGroupEdge, QueryHelpers>(UserGroupEdge, { schemaOptions: { timestamps: true } })
+export const UserOrganisationMyinTSetEdgeModel = getModelForClass<typeof UserOrganisationMyinTSetEdge, QueryHelpers>(UserOrganisationMyinTSetEdge, {
+  schemaOptions: { timestamps: true },
+})
 @InputType({ description: 'The type used for creating a new user' })
 export class CreateUserInput {
   @IsEmail()

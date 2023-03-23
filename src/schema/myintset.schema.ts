@@ -2,7 +2,7 @@ import { getModelForClass, modelOptions, index, Prop, prop, Ref } from '@typegoo
 import { Tag, ListTagInput } from './tag.schema'
 import { Frame, ListFrameInput } from './frame.schema'
 import { Piece, ListPieceInput } from './piece.schema'
-import { User } from './user.schema'
+import { Theme } from './theme.schema'
 import { MyinTObjectOwner } from './myintobject.schema'
 import { Field, InputType, ObjectType, ID, Int, createUnionType } from 'type-graphql'
 
@@ -22,6 +22,11 @@ export class MyinTSet extends MyinTObjectOwner {
   @Field(() => [String], { nullable: true }) // a myintset has 0..n frames
   @prop({ required: false, default: [], ref: 'Frame' })
   frames: Ref<Frame>[]
+
+  // If no theme set, Theme of MyinT is used
+  @Field(() => Theme, { nullable: true })
+  @prop({ required: false, ref: () => Theme })
+  slideTheme?: Ref<Theme>
 }
 
 export const MyinTSetModel = getModelForClass<typeof MyinTSet>(MyinTSet, { schemaOptions: { timestamps: { createdAt: true } } })

@@ -1,0 +1,40 @@
+
+Terminology
+
+MyinT:
+The MyinT-object is the mind of every user. 
+(chatGPT: A person has one mind, which refers to the individual's consciousness, 
+thought processes, and cognitive abilities. However, different aspects of the mind can be identified, such as the 
+conscious and unconscious mind, the rational and emotional mind, or the left and right brain hemispheres. 
+These distinctions are based on different ways of conceptualizing the mind and its functions, but ultimately they all 
+refer to the same indivisible and complex system that generates thoughts, feelings, and behaviors.)
+
+Profile (Person):
+Describes the person that uses the app MyinT. 
+It contains personal info like name, surname, address etc. 
+Every real-life person should have 1 Person-object in the MyinT-app and it is linked to the personal 
+MyinT-object (one) of this person.
+
+MyinTSet:
+A Person can define subsets of their MyinT in a MyinTSet-object. This MyinTSet can be used to give other Users access to parts of their MyinT.
+
+User: 
+The object that contains the information a user needs to use MyinT: username, password, tokens etc. 
+It gives the Person-object also certain roles in the app MyinT, but the Profile-object can have multiple users
+Usage of the app is logged to this object.
+
+So a User-object is basically one of the ways for a Person to get access to MyinT. 
+
+Organisation:
+An Organisation-object is a tree of one or more Organisation-objects (like an organizational chart) with every 
+Organisation-object containing a ParticipantsGRoup-object (Users with different roles in a Group).
+This way a Profile-object can be linked to different Organisations through different User-objects. Only through that 
+linked User the Person will be able to 'enter' this Organisation.
+
+Organisation-objects can be used to link Users to specific Groups that have certain rights on the MyinTSets, of members of that Group, 
+linked to that Organisation.
+ 
+The hierarchy in the Organisation-tree defines the rights Users have over the MyinTs of other Users in their Organisation.
+
+A Person connects one MyinTSet-object of his MyinT to one User-Organisation relation (UserOrganisationMyinTSetEdge). 
+This way only a subset of the Persons MyinT will be available for other Users in this Organisation.

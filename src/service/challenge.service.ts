@@ -1,5 +1,4 @@
 import { CreateChallengeInput, GetChallengeInput, ChallengeModel } from '../schema/challenge.schema'
-import { EdgeModel } from '../schema/edge.schema'
 
 class ChallengeService {
   async createChallenge(input: CreateChallengeInput) {

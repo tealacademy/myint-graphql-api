@@ -5,7 +5,7 @@ import { MyinTObjectOwner } from './myintobject.schema'
 import { Edge, VersionEdge } from './edge.schema'
 import { Theme } from './theme.schema'
 import { File } from './file.schema'
-import { UserGroup } from './group.schema'
+// import { UserGroup } from './group.schema'
 import { Tag, ListTagInput } from './tag.schema'
 import { Changeset } from './../utils/json-diff-ts/jsonDiff'
 
@@ -36,7 +36,7 @@ export class Piece extends MyinTObjectOwner {
   // If no theme set, default theme is used
   @Field(() => Theme, { nullable: true })
   @prop({ required: false, ref: () => Theme })
-  theme?: Ref<Theme>
+  slideTheme?: Ref<Theme>
 
   // number of updates on this piece
   // API creates new versionnumber
@@ -178,23 +178,22 @@ export class PieceVersionEdge extends VersionEdge {
  * PieceGroupEdge stores relation between Pieces and groups who can
  * use this Piece. Roles (like editor, viewer etc) are stored in UserGroup
  */
-@ObjectType({ description: 'Edge: which group(s) has the right to use a piece' })
-@modelOptions({ options: { allowMixed: 0 } })
-export class PieceGroupEdge extends Edge {
-  // Original piece
-  @Field(() => Piece)
-  @prop({ required: true, ref: () => Piece })
-  piece: Ref<Piece>
+// @ObjectType({ description: 'Edge: which group(s) has the right to use a piece' })
+// @modelOptions({ options: { allowMixed: 0 } })
+// export class PieceGroupEdge extends Edge {
+//   // Original piece
+//   @Field(() => Piece)
+//   @prop({ required: true, ref: () => Piece })
+//   piece: Ref<Piece>
 
-  // Copy or original piece
-  @Field(() => UserGroup)
-  @prop({ required: true, ref: () => UserGroup })
-  group: Ref<UserGroup>
-}
+//   @Field(() => UserGroup)
+//   @prop({ required: true, ref: () => UserGroup })
+//   group: Ref<UserGroup>
+// }
 
 export const PieceModel = getModelForClass<typeof Piece>(Piece, { schemaOptions: { timestamps: { createdAt: true, updatedAt: true } } })
 export const PieceVersionEdgeModel = getModelForClass<typeof PieceVersionEdge>(PieceVersionEdge, { schemaOptions: { timestamps: { createdAt: true } } })
-export const PieceGroupEdgeModel = getModelForClass<typeof PieceGroupEdge>(PieceGroupEdge, { schemaOptions: { timestamps: { createdAt: true } } })
+// export const PieceGroupEdgeModel = getModelForClass<typeof PieceGroupEdge>(PieceGroupEdge, { schemaOptions: { timestamps: { createdAt: true } } })
 
 /** a new piece is always created by the user who calls the API */
 @InputType({ description: 'The type used for creating a new piece' })

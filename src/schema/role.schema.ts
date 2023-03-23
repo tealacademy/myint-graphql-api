@@ -15,17 +15,17 @@ export class Role extends MyinTObjectOwner {
   @prop({ required: false })
   description?: string
 
-  @Field(() => [Permission])
-  @prop({ required: true, default: [] })
-  permissions: Permission[]
+  @Field(() => Permission)
+  @prop({ required: true })
+  permissions: Permission
 }
 
 @ObjectType({ description: 'The permissions' })
-// @modelOptions({ options: { allowMixed: 0 } })
 export class Permission {
-  @Field(() => MODELS)
-  @prop({ required: true })
-  objectType: string
+  // Old
+  // @Field(() => MODELS)
+  // @prop({ required: true })
+  // objectType: string
 
   @Field(() => Boolean)
   @prop({ required: true, default: false })
@@ -71,8 +71,8 @@ export class CreateRoleInput implements Partial<Role> {
   @Field(() => String)
   description?: string
 
-  @Field(() => [Permission])
-  permissions: Permission[]
+  @Field(() => Permission)
+  permissions: Permission
 }
 
 @InputType({ description: 'The type used for creating a new Role' })

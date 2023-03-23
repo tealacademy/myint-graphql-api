@@ -15,9 +15,6 @@ import { PIECE_EDGES, ERROR_MESSAGES } from '../types/data'
 import { applyChangeset, revertChangeset } from '../utils/json-diff-ts/jsonDiff'
 import { Number } from 'mongoose'
 
-PieceModel.schema.methods.aaa = function () {
-  console.log('test')
-}
 class PieceService {
   /** Create complete document with filled tags, slides
    * Tags must exist in db
