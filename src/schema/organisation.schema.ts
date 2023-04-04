@@ -12,13 +12,13 @@ export class Organisation extends Group {
   @prop({ required: false })
   address?: Address
 
-  @Field(() => Organisation)
-  @prop({ ref: () => Organisation })
-  organisations: Organisation[]
+  // @Field(() => Organisation)
+  // @prop({ ref: () => Organisation })
+  // organisations: Organisation[]
 
-  @Field(() => Boolean)
-  @prop({ required: true, default: false })
-  inherentRightsFromParent: boolean
+  // @Field(() => Boolean)
+  // @prop({ required: true, default: false })
+  // inherentRightsFromParent: boolean
 
   @Field(() => Permission)
   @prop({ required: false })

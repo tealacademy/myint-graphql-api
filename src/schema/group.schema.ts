@@ -27,7 +27,7 @@ export class Group extends MyinTObjectOwner {
   // groups: Ref<Group>[]
 }
 
-@ObjectType({ description: 'Users and roles' })
+@ObjectType({ description: 'User with role' })
 export class UserRole {
   @Field(() => User)
   @prop({ required: true, ref: 'User' })
@@ -62,9 +62,9 @@ export class UserRole {
 @ObjectType({ description: 'The participants group model with a Role per User' })
 @modelOptions({ options: { allowMixed: 0 } })
 export class ParticipantGroup extends Group {
-  @Field(() => UserRole)
+  @Field(() => [UserRole])
   @prop({ required: true, ref: () => UserRole })
-  participants: Ref<UserRole>
+  participants: Ref<UserRole>[]
 }
 
 /** */
