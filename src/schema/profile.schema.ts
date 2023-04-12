@@ -6,8 +6,9 @@ import { User } from '../schema/user.schema'
 import { MyinTObject } from './myintobject.schema'
 import { Edge } from './edge.schema'
 import { MyinT } from './myintobject.schema'
+import { Role } from './role.schema'
 
-@ObjectType({ description: 'The address class' }) // grapQL does not know this will be an object so we add @Object() (from type-graphql)
+@ObjectType({ description: 'The address class' }) // graphQL does not know this will be an object so we add @Object() (from type-graphql)
 export class Address {
   @Field(() => String, { nullable: true })
   @prop({ required: false })
@@ -26,7 +27,7 @@ export class Address {
   city?: string
 }
 
-@ObjectType({ description: 'The user-profile model' }) // grapQL does not know this will be an object so we add @Object() (from type-graphql)
+@ObjectType({ description: 'The user-profile model' }) // graphQL does not know this will be an object so we add @Object() (from type-graphql)
 @modelOptions({ options: { allowMixed: 0 } })
 export class Profile extends MyinTObject {
   @Field(() => String)
@@ -50,11 +51,11 @@ export class Profile extends MyinTObject {
   // users: Ref<User>[]
 }
 
-/** Edge: to which user(s) belongs a profile
+/** Edge: to which user a profile belongs and which role this user has in the app MyinT
  *  We put this in an edge, instead of an array in the Profile-object because of ...
  */
-@ObjectType({ description: 'Edge: to which user(s) belongs a profile' })
-export class ProfileUserEdge extends Edge {
+@ObjectType({ description: 'Edge: to which user a profile belongs and which role this user has in the app MyinT' })
+export class ProfileUserRoleEdge extends Edge {
   @Field(() => Profile)
   @prop({ required: true, ref: () => Profile })
   profile: Ref<Profile>
@@ -62,10 +63,15 @@ export class ProfileUserEdge extends Edge {
   @Field(() => User)
   @prop({ required: true, ref: 'User' })
   user: Ref<User>
+
+  // Role in MyinT
+  @Field(() => Role)
+  @prop({ required: true, ref: () => Role })
+  role: Ref<Role>
 }
 
 export const ProfileModel = getModelForClass<typeof Profile>(Profile, { schemaOptions: { timestamps: { createdAt: true } } })
-export const ProfileUserEdgeModel = getModelForClass<typeof ProfileUserEdge>(ProfileUserEdge, { schemaOptions: { timestamps: { createdAt: true } } })
+export const ProfileUserEdgeModel = getModelForClass<typeof ProfileUserRoleEdge>(ProfileUserRoleEdge, { schemaOptions: { timestamps: { createdAt: true } } })
 
 @InputType({ description: 'The type used for creating a new profile' })
 export class CreateProfileInput {

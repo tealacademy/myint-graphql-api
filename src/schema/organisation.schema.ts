@@ -2,55 +2,44 @@ import { getModelForClass, modelOptions, index, Prop, prop, Ref } from '@typegoo
 import { Field, InputType, ObjectType, InterfaceType, ID, Int } from 'type-graphql'
 import { Edge } from './edge.schema'
 import { Address } from './profile.schema'
-import { Group, ParticipantGroup } from './group.schema'
+import { Group, Tribe } from './group.schema'
 import { Permission } from './role.schema'
 
-@ObjectType({ description: 'The message model' })
+/** The organisation model
+ *
+ */
+@ObjectType({ description: 'The organisation model' })
 @modelOptions({ options: { allowMixed: 0 } })
 export class Organisation extends Group {
   @Field(() => Address)
   @prop({ required: false })
   address?: Address
 
-  // @Field(() => Organisation)
-  // @prop({ ref: () => Organisation })
-  // organisations: Organisation[]
-
-  // @Field(() => Boolean)
-  // @prop({ required: true, default: false })
-  // inherentRightsFromParent: boolean
-
-  @Field(() => Permission)
-  @prop({ required: false })
-  defaultPermissions?: Permission
+  // An organisation always has 1 Tribe of users that form
+  // the organisation. It describes also the role the user has within
+  // this organisation.
+  @Field(() => Tribe)
+  @prop({ ref: () => Tribe })
+  basicTribe: Ref<Tribe>
 }
 
-@ObjectType({ description: 'The edge between organisation and usergroup defining roles' })
+/** The edge between Organisation and definable Tribes
+ *
+ */
+@ObjectType({ description: 'The edge between Organisation and definable Tribes' })
 @modelOptions({ options: { allowMixed: 0 } })
-export class OrganisationUserGroupEdge extends Edge {
+export class OrganisationTribeEdge extends Edge {
   @Field(() => Organisation)
   @prop({ ref: () => Organisation })
   organisation: Ref<Organisation>
 
-  @Field(() => ParticipantGroup)
-  @prop({ ref: () => ParticipantGroup })
-  participants: Ref<ParticipantGroup>
+  @Field(() => Tribe)
+  @prop({ ref: () => Tribe })
+  tribe: Ref<Tribe>
 }
 
-// @ObjectType({ description: 'The edge between organisation and participants defining groups of users' })
-// @modelOptions({ options: { allowMixed: 0 } })
-// export class OrganisationPartipicantsGroupEdge extends Edge {
-//   @Field(() => Organisation)
-//   @prop({ ref: () => Organisation })
-//   organisation: Ref<Organisation>
-
-//   @Field(() => ParticipantGroup)
-//   @prop({ ref: () => ParticipantGroup })
-//   participantsGroup: Ref<ParticipantGroup>
-// }
-
 export const OrganisationModel = getModelForClass<typeof Organisation>(Organisation, { schemaOptions: { timestamps: { createdAt: true } } })
-export const OrganisationUserGroupEdgeModel = getModelForClass<typeof OrganisationUserGroupEdge>(OrganisationUserGroupEdge, {
+export const OrganisationTribeEdgeModel = getModelForClass<typeof OrganisationTribeEdge>(OrganisationTribeEdge, {
   schemaOptions: { timestamps: true },
 })
 
@@ -59,6 +48,6 @@ export class CreateOrganisationInput implements Partial<Organisation> {
   @Field(() => String)
   name: string
 
-  @Field(() => [Organisation])
-  organisations: Organisation[]
+  @Field(() => Organisation)
+  organisation: Organisation
 }

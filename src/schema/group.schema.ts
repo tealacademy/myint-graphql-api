@@ -16,22 +16,16 @@ export class Group extends MyinTObjectOwner {
   @Field(() => String)
   @prop({ required: true })
   description: string
-
-  // @Field(() => [Role])
-  // @prop({ required: true, default: [], ref: () => Role })
-  // roles: Ref<Role>[]
-
-  // through edges
-  // @Field(() => [Group])
-  // @prop({ required: false, ref: () => Group })
-  // groups: Ref<Group>[]
 }
 
+/**
+ * This is not a model
+ * */
 @ObjectType({ description: 'User with role' })
 export class UserRole {
   @Field(() => User)
   @prop({ required: true, ref: 'User' })
-  users: Ref<User>
+  user: Ref<User>
 
   @Field(() => Role)
   @prop({ required: true, default: null, ref: () => Role })
@@ -55,16 +49,18 @@ export class UserRole {
 // }
 
 /**
- * The participants-group has two userGroups with each only 1 role
+ * The tribe is used for smaller groups, for example
+ * a group of people working on the same Frame
+ * It has two userGroups with each only 1 role
  * for chat-group: in database-init we need to create default-roles for these two groups
  * for frames: we need to investigate which roles we need
  */
-@ObjectType({ description: 'The participants group model with a Role per User' })
+@ObjectType({ description: 'The tribe model with a Role per User' })
 @modelOptions({ options: { allowMixed: 0 } })
-export class ParticipantGroup extends Group {
+export class Tribe extends Group {
   @Field(() => [UserRole])
   @prop({ required: true, ref: () => UserRole })
-  participants: Ref<UserRole>[]
+  tribe: Ref<UserRole>[]
 }
 
 /** */
@@ -86,20 +82,20 @@ export class ParticipantGroup extends Group {
 @modelOptions({ options: { allowMixed: 0 } })
 export class ParticipantGroupVersionEdge extends VersionEdge {
   // Original role
-  @Field(() => ParticipantGroup)
-  @prop({ required: true, ref: () => ParticipantGroup })
-  participantGroupOld: Ref<ParticipantGroup>
+  @Field(() => Tribe)
+  @prop({ required: true, ref: () => Tribe })
+  tribeOld: Ref<Tribe>
 
   // Copy or original role
-  @Field(() => ParticipantGroup)
-  @prop({ required: true, ref: () => ParticipantGroup })
-  participantGroupNew: Ref<ParticipantGroup>
+  @Field(() => Tribe)
+  @prop({ required: true, ref: () => Tribe })
+  tribeNew: Ref<Tribe>
 }
 
 // export const UserGroupModel = getModelForClass<typeof UserGroup>(UserGroup, { schemaOptions: { timestamps: true } })
-export const ParticipantGroupModel = getModelForClass<typeof ParticipantGroup>(ParticipantGroup, { schemaOptions: { timestamps: true } })
+export const TribeModel = getModelForClass<typeof Tribe>(Tribe, { schemaOptions: { timestamps: true } })
 // export const UserGroupVersionEdgeModel = getModelForClass<typeof UserGroupVersionEdge>(UserGroupVersionEdge, { schemaOptions: { timestamps: true } })
-export const ParticipantGroupVersionEdgeModel = getModelForClass<typeof ParticipantGroupVersionEdge>(ParticipantGroupVersionEdge, {
+export const TribeVersionEdgeModel = getModelForClass<typeof ParticipantGroupVersionEdge>(ParticipantGroupVersionEdge, {
   schemaOptions: { timestamps: true },
 })
 

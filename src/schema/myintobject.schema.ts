@@ -3,7 +3,7 @@ import { Field, ObjectType, ID } from 'type-graphql'
 import { User } from './user.schema'
 // import { UserGroup } from './group.schema'
 import { Theme } from './theme.schema'
-import { Edge } from './edge.schema'
+import { Role } from './role.schema'
 
 /**
  * Relations in our database are made with edges between nodes.
@@ -48,6 +48,10 @@ export class MyinTObjectOwner extends MyinTObject {
   // dependencies, such as Option "ref" for "${name}.${key}" is null/undefined! [E005].
   @prop({ required: true, ref: 'User', immutable: true })
   owner: Ref<User>
+
+  @Field(() => Boolean)
+  @prop({ required: true, defaultValue: false })
+  public: boolean
 
   // THe tokens that give different rights on this object.
   @Field(() => Tokens)

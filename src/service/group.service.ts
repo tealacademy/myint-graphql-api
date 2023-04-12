@@ -1,4 +1,4 @@
-import { CreateGroupInput, GetGroupInput, ParticipantGroupModel } from '../schema/group.schema'
+import { CreateGroupInput, GetGroupInput, TribeModel } from '../schema/group.schema'
 import { User } from '../schema/user.schema'
 
 class GroupService {
@@ -12,13 +12,13 @@ class GroupService {
   //   return ParticipantGroupModel.create(input)
   // }
 
-  async findParticipantGroups() {
+  async findTribes() {
     // Pagination login
-    return ParticipantGroupModel.find().lean()
+    return TribeModel.find().lean()
   }
 
-  async findSingleParticipantGroup(input: GetGroupInput) {
-    return ParticipantGroupModel.findOne(input).lean()
+  async findSingleTribe(input: GetGroupInput) {
+    return TribeModel.findOne(input).lean()
   }
 }
 
