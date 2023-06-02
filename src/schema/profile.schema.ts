@@ -1,6 +1,4 @@
 import { getModelForClass, prop, modelOptions, Ref } from '@typegoose/typegoose' // see https://typegoose.github.io/typegoose/
-import { AsQueryMethod } from '@typegoose/typegoose/lib/types'
-import { IsEmail, IsOptional, MaxLength, MinLength } from 'class-validator'
 import { Field, InputType, ObjectType, ID } from 'type-graphql'
 import { User } from '../schema/user.schema'
 import { MyinTObject } from './myintobject.schema'

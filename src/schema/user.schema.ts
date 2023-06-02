@@ -1,48 +1,44 @@
-import { getModelForClass, prop, pre, ReturnModelType, queryMethod, modelOptions, index, Ref } from '@typegoose/typegoose' // see https://typegoose.github.io/typegoose/
-import { AsQueryMethod } from '@typegoose/typegoose/lib/types'
-import bcrypt from 'bcrypt'
-import { IsEmail, MaxLength, MinLength } from 'class-validator'
-import { Field, InputType, ObjectType, ID, Int } from 'type-graphql'
-import { Profile, CreateProfileInput } from './profile.schema'
+import { getModelForClass, prop, modelOptions, Ref } from '@typegoose/typegoose' // see https://typegoose.github.io/typegoose/
+import { Field, InputType, ObjectType } from 'type-graphql'
 import { Group } from './group.schema'
 import { MyinTObject } from './myintobject.schema'
 import { MyinTSet } from './myintset.schema'
 import { Edge } from './edge.schema'
 
-function findByEmail(this: ReturnModelType<typeof User, QueryHelpers>, email: User['eMail']) {
-  return this.findOne({ email })
-}
+// function findByEmail(this: ReturnModelType<typeof User, QueryHelpers>, email: User['eMail']) {
+//   return this.findOne({ email })
+// }
 
-interface QueryHelpers {
-  findByEmail: AsQueryMethod<typeof findByEmail>
-}
+// interface QueryHelpers {
+//   findByEmail: AsQueryMethod<typeof findByEmail>
+// }
 
 // This runs pre-save
-@pre<User>('save', async function () {
-  // Check that the password is being modified, otherwise do not save
-  if (!this.isModified('password')) {
-    return
-  }
-  // encrypt the password
-  const salt = await bcrypt.genSalt(10)
-  const hash = bcrypt.hashSync(this.passWord, salt)
-  this.passWord = hash
-})
-@index({ email: 1 })
-@queryMethod(findByEmail) // We find users by email
+// @pre<User>('save', async function () {
+//   // Check that the password is being modified, otherwise do not save
+//   if (!this.isModified('password')) {
+//     return
+//   }
+//   // encrypt the password
+//   const salt = await bcrypt.genSalt(10)
+//   const hash = bcrypt.hashSync(this.passWord, salt)
+//   this.passWord = hash
+// })
+// @index({ email: 1 })
+// @queryMethod(findByEmail) // We find users by email
 @ObjectType({ description: 'The user model' }) // grapQL does not know this will be an object so we add @Object() (from type-graphql)
 @modelOptions({ options: { allowMixed: 0 } })
 export class User extends MyinTObject {
-  @Field(() => String)
-  @prop({ required: true, unique: true })
-  eMail: string
+  // @Field(() => String)
+  // @prop({ required: true, unique: true })
+  // eMail: string
 
-  @prop({ required: true })
-  passWord: string
+  // @prop({ required: true })
+  // passWord: string
 
-  @Field(() => String)
-  @prop({ required: true })
-  confirmToken: string
+  // @Field(() => String)
+  // @prop({ required: true })
+  // confirmToken: string
 
   @Field(() => String)
   @prop({ required: true, nullable: true })
@@ -57,13 +53,13 @@ export class User extends MyinTObject {
   // @prop({ required: true, default: [], ref: () => Group })
   // groups: Ref<Group>[]
 
-  @Field(() => Boolean)
-  @prop({ required: true, default: false })
-  active: boolean
+  // @Field(() => Boolean)
+  // @prop({ required: true, default: false })
+  // active: boolean
 
-  @Field(() => Profile)
-  @prop({ required: true })
-  profile: Ref<Profile>
+  // @Field(() => Profile)
+  // @prop({ required: true })
+  // profile: Ref<Profile>
 }
 
 @ObjectType({ description: 'Edge: to which group(s) belongs a user' })
@@ -96,42 +92,50 @@ export class UserOrganisationMyinTSetEdge extends Edge {
   myinTSet: Ref<MyinTSet>
 }
 
-export const UserModel = getModelForClass<typeof User, QueryHelpers>(User, { schemaOptions: { timestamps: true } })
-export const UserGroupEdgeModel = getModelForClass<typeof UserGroupEdge, QueryHelpers>(UserGroupEdge, { schemaOptions: { timestamps: true } })
-export const UserOrganisationMyinTSetEdgeModel = getModelForClass<typeof UserOrganisationMyinTSetEdge, QueryHelpers>(UserOrganisationMyinTSetEdge, {
+export const UserModel = getModelForClass<typeof User>(User, { schemaOptions: { timestamps: true } })
+export const UserGroupEdgeModel = getModelForClass<typeof UserGroupEdge>(UserGroupEdge, { schemaOptions: { timestamps: true } })
+export const UserOrganisationMyinTSetEdgeModel = getModelForClass<typeof UserOrganisationMyinTSetEdge>(UserOrganisationMyinTSetEdge, {
   schemaOptions: { timestamps: true },
 })
-@InputType({ description: 'The type used for creating a new user' })
-export class CreateUserInput {
-  @IsEmail()
-  @Field(() => String)
-  eMail: string
+// @InputType({ description: 'The type used for creating a new user' })
+// export class CreateUserInput {
+//   @Field(() => String)
+//   Id: string
 
-  @MinLength(6, {
-    message: 'password must be at least 6 characters long',
-  })
-  @MaxLength(50, {
-    message: 'password can not be longer than 50 characters',
-  })
-  @Field(() => String)
-  passWord: string
+//   @MinLength(6, {
+//     message: 'password must be at least 6 characters long',
+//   })
+//   @MaxLength(50, {
+//     message: 'password can not be longer than 50 characters',
+//   })
+//   @Field(() => String)
+//   passWord: string
 
-  @Field(() => String, { nullable: true }) // When no settings, user gets defaultSettings in frontend
-  settings?: string
+//   @Field(() => String, { nullable: true }) // When no settings, user gets defaultSettings in frontend
+//   settings?: string
 
-  //
+//   //
+//   @Field(() => String)
+//   profile?: string
+// }
+
+@InputType({ description: 'The type used for settings for a user' })
+export class CreateUserSettings {
   @Field(() => String)
-  profile?: string
+  Id: string
+
+  @Field(() => String)
+  settings: string
 }
 
-@InputType()
-export class LoginInput {
-  @Field(() => String)
-  eMail: string
+// @InputType()
+// export class LoginInput {
+//   @Field(() => String)
+//   eMail: string
 
-  @Field(() => String)
-  passWord: string
-}
+//   @Field(() => String)
+//   passWord: string
+// }
 
 @InputType()
 export class AddUserGroupInput {

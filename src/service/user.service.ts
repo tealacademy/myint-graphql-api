@@ -145,7 +145,7 @@ class UserService {
           })
         }
       )
-      const dataString = JSON.stringify(`{to: New MyinT user <${result.eMail}>`)
+      // const dataString = JSON.stringify(`{to: New MyinT user <${result.eMail}>`)
       // const newLog = new LogService().createLog({ action: LOG_ACTIONS.REGISTER_USER, data: dataString }, result, LOG_EDGES.USER_LOG_ITEM)
 
       return result
